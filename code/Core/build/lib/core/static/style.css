@@ -1,0 +1,84 @@
+*
+{
+    margin: 0
+}
+
+body
+{
+    height: 100vh;
+    width:100vw;
+}
+
+.wrapper
+{
+    box-sizing: border-box;
+    padding: 0.5rem;
+    gap:0.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+}
+
+nav
+{
+    background-color: darkgray;
+    height: 10%;
+    width: 100%;
+}
+
+.upper
+{
+    gap:0.5rem;
+    display: flex;
+    flex-direction: row;
+    height: 60%;
+    width: 100%;
+}
+
+.lower
+{
+    gap:0.5rem;
+    display: flex;
+    flex-direction: row;
+    height: 30%;
+    width: 100%;
+}
+
+.tree-view
+{
+    background-color: blueviolet;
+    height: 100%;
+    width: 25%;
+}
+
+.main-visual
+
+{
+    background-color: darkorange;
+    height: 100%;
+    width: 75%;
+}
+
+.bird-view
+{
+    background-color: darkred;
+    height: 100%;
+    width: 25%;
+}
+
+.search-and-details
+{
+    background-color: yellow;
+    height: 100%;
+    width: 75%;
+}
+
+.border-frame
+{
+    box-sizing: border-box;
+    border-width: 0.2rem;
+    border-style: solid;
+    border-color: black;
+    border-radius: 0.5rem;
+}
