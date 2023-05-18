@@ -1,10 +1,6 @@
 from django.urls import path
 
-from core import prodavnica_view
-
 from . import views
-
-for
 
 urlpatterns = [
     path('', views.index, name="index"),
