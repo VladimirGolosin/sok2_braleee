@@ -8,7 +8,7 @@ class CoreConfig(AppConfig):
     plugini_vizualizacija = []
 
     def ready(self):
-        self.plugini_ucitavanje = load_plugins("tim03.ucitavanje")
+        self.plugini_ucitavanje = load_plugins("tim03.testParser")
         self.plugini_vizualizacija = load_plugins("tim03.vizualizacija") #TODO: promeniti ovo u pluginima
 
 def load_plugins(oznaka):
