@@ -1,6 +1,7 @@
 *
 {
-    margin: 0
+    margin: 0;
+    font-family: Calibri;
 }
 
 body
@@ -23,7 +24,7 @@ body
 nav
 {
     background-color: darkgray;
-    height: 10%;
+    height: 18%;
     width: 100%;
 }
 
@@ -32,7 +33,7 @@ nav
     gap:0.5rem;
     display: flex;
     flex-direction: row;
-    height: 60%;
+    height: 54%;
     width: 100%;
 }
 
@@ -41,7 +42,7 @@ nav
     gap:0.5rem;
     display: flex;
     flex-direction: row;
-    height: 30%;
+    height: 28%;
     width: 100%;
 }
 
@@ -81,4 +82,42 @@ nav
     border-style: solid;
     border-color: black;
     border-radius: 0.5rem;
+    display: flex;
+    padding: 0.6rem;
+    gap: 32px;
 }
+
+h1
+{
+    font-weight: normal;
+}
+
+h2
+{
+    font-weight: normal;
+    font-size: 14px;
+}
+
+select, input, button
+{
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    font-weight: normal;
+    border-style: none;
+}
+
+.selections form
+{
+    display:flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#load-graph-button
+{
+    margin-left: 16px;
+}
+
+
+

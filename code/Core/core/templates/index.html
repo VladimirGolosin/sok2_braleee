@@ -10,7 +10,43 @@
 <body>
     <div class="wrapper">
         <nav class="border-frame">
-            <div class="logo">tim03 RXLJAAA</div>
+            <div class="logo">
+                <h1>Team3 Graph Visualizator</h1>
+            </div>
+
+            <div class="selections">
+                <form>
+                    <div class="selections-row">
+                        <select id="visualizator-selection" name="visualization">
+                            <option value="default">select visualizator</option>
+                            {% for visualizator in visualizators %}
+                            <option value="{{ visualiztor.name }}"></option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="selections-row">
+                        <h2>parse and visualize graph from file:</h2>
+                        <select id="parser-selection" name="parser">
+                            <option value="default">select parser</option>
+                            {% for parser in parsers %}
+                            <option value="{{ parser.name }}"></option>
+                            {% endfor %}
+                        </select>
+                        <input type="file" id="file-selection" name="file">
+                        <button type="submit">Parse file</button>
+                    </div>
+                    <div class="selections-row">
+                        <h2>load existing graph:</h2>
+                        <select id="graph-selection" name="graph">
+                            <option value="default">select graph</option>
+                            {% for graph in loaded_graphs %}
+                            <option value="{{ graph.name }}"></option>
+                            {% endfor %}
+                        </select>
+                        <button id="load-graph-button" type="submit">Load graph</button>
+                    </div>
+                </form>
+            </div>
         </nav>
 
         <div class="upper">
