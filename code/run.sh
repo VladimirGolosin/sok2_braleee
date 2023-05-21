@@ -24,5 +24,5 @@ source clean.sh
 
 # build components
 lay_egs Core
-lay_egs UcitavanjeKod
+lay_egs TestParser
 run_server django_project

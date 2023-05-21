@@ -13,7 +13,7 @@ remove_eggs() {
 
 # remove build files from components
 remove_eggs Core
-remove_eggs UcitavanjeKod
+remove_eggs TestParser
 
 # remove db
 cd django_project
