@@ -8,14 +8,18 @@ class CoreConfig(AppConfig):
     plugini_vizualizacija = []
 
     def ready(self):
-        self.plugini_ucitavanje = load_plugins("tim03.testParser")
-        self.plugini_vizualizacija = load_plugins("tim03.vizualizacija") #TODO: promeniti ovo u pluginima
+        self.plugini_ucitavanje = load_plugins("parse")
+        self.plugini_vizualizacija = load_plugins("visualization") #TODO: promeniti ovo u pluginima
+        print("AAAAAAAAA")
+        print("br ucitavanje",len(self.plugini_ucitavanje))
+        print("br visual", len(self.plugini_ucitavanje))
 
-def load_plugins(oznaka):
+def load_plugins(group_tag):
     plugins = []
-    for ep in pkg_resources.iter_entry_points(group=oznaka):
+    for ep in pkg_resources.iter_entry_points(group=group_tag):
         p = ep.load()
         print("{} {}".format(ep.name, p))
+        print(group_tag)
         plugin = p()
         plugins.append(plugin)
     return plugins

@@ -5,9 +5,7 @@ setup(
     version="0.1",
     packages=find_packages(),
     install_requires=['tim3-core>=0.1'],
-    entry_points = {
-        'test.load':
-            ['parse-dummy=testParser.kod.parse:ParseDummy'],
-    },
+    entry_points = {'parse':
+            ['dummy_parse=testParser.kod.parse:DummyParser']},
     zip_safe=True
 )

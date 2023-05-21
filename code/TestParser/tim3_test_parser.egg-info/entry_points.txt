@@ -1,2 +1,2 @@
-[test.load]
-parse-dummy = testParser.kod.parse:ParseDummy
+[parse]
+dummy_parse = testParser.kod.parse:DummyParser
