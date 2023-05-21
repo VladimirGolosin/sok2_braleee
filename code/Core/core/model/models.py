@@ -1,6 +1,5 @@
 import uuid
 
-
 class Node:
 
     def __init__(self, **kwargs):
@@ -42,49 +41,12 @@ class Node:
             return self._id == other.id
         return False
 
-
-class Edge:
-
-    def __init__(self, **kwargs):
-        self._id = uuid.uuid4()
-        self._first_node = kwargs.get("first_node", None)
-        self._second_node = kwargs.get("second_node", None)
-
-    @property
-    def id(self):
-        return self._id
-
-    @property
-    def first_node(self):
-        return self._first_node
-
-    @first_node.setter
-    def first_node(self, value):
-        self._first_node = value
-
-    @property
-    def second_node(self):
-        return self._second_node
-
-    @second_node.setter
-    def second_node(self, value):
-        self._first_node = value
-
-    def __str__(self):
-        return self._first_node.name + " to " + self._second_node.name
-
-    def __eq__(self, other):
-        if isinstance(other, Edge):
-            return self._id == other.id
-        return False
-
-
 class Graph:
 
     def __init__(self, **kwargs):
         self._id = uuid.uuid4()
         self._nodes = kwargs.get("nodes", [])
-        self._edges = kwargs.get("edges", [])
+        self._edge_matrix = kwargs.get("edge_matrix", None)
 
     @property
     def nodes(self):
@@ -95,9 +57,10 @@ class Graph:
         self._nodes = value
 
     @property
-    def edges(self):
-        return self._edges
+    def edge_matrix(self):
+        return self._edge_matrix
 
-    @edges.setter
-    def edges(self, value):
-        self._edges = value
+    @edge_matrix.setter
+    def edge_matrix(self, value):
+        self._edge_matrix = value
+
