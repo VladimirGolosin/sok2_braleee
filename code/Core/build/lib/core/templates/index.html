@@ -29,7 +29,7 @@
                         <select id="parser-selection" name="parser">
                             <option value="default">select parser</option>
                             {% for parser in parsers %}
-                            <option value="{{ parser.name }}"></option>
+                                <option value="{{ parser.name }}">{{ parser.name }}</option>
                             {% endfor %}
                         </select>
                         <input type="file" id="file-selection" name="file">

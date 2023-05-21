@@ -12,7 +12,7 @@ class CoreConfig(AppConfig):
         self.plugini_vizualizacija = load_plugins("visualization") #TODO: promeniti ovo u pluginima
         print("AAAAAAAAA")
         print("br ucitavanje",len(self.plugini_ucitavanje))
-        print("br visual", len(self.plugini_ucitavanje))
+        print("br visual", len(self.plugini_vizualizacija))
 
 def load_plugins(group_tag):
     plugins = []

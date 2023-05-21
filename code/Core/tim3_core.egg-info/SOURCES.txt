@@ -7,6 +7,8 @@ core/tests.py
 core/urls.py
 core/views.py
 core/migrations/__init__.py
+core/model/__init__.py
+core/model/models.py
 core/services/__init__.py
 core/services/parser.py
 core/services/visualizator.py

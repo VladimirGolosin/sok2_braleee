@@ -4,8 +4,9 @@ from django.shortcuts import render, redirect
 
 def index(request):
     plugini = apps.get_app_config('core').plugini_ucitavanje
-    plugini = plugini.extend(apps.get_app_config('core').plugini_vizualizacija)
-    return render(request, "index.html", {"title": "Index", "plugini_ucitavanje": plugini})
+    print("KURCINA VELIKA")
+    print(plugini[0].name())
+    return render(request, "index.html", {"parsers": plugini})
 
 
 def ucitavanje_plugin(request, id):
