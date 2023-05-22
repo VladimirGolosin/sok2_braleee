@@ -15,8 +15,9 @@ remove_eggs() {
 remove_eggs Core
 remove_eggs TestParser
 remove_eggs VlafaParser
+remove_eggs SimpleVisualizer
 
 # remove db
-cd django_project
-rm *.sqlite3
-cd ..
+#cd django_project
+#rm *.sqlite3
+#cd ..

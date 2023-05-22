@@ -1,0 +1,153 @@
+<script>
+    var nodes={
+        {% for node in graph.get_nodes %}
+            {{ node.get_id }}: {
+                id: "{{ node.get_id }}",
+                name: "{{ node.get_name }}",
+                selected: "{{ node.is_selected }}",
+                attributes: {
+                    {% for attr in node.get_attribtes %}
+                        {{ attr.get_name }}: {
+                            type: "{{ attr.get_type }}",
+                            value: "{{ attr.get_value }}"
+                        },
+                    {% endfor %}
+                },
+                extensions: {
+                    {% for name, extension in node.get_extensions %}
+                        {{ extension.get_name }}: "{{ extension.get_raw_data }}",
+                    {% endfor %}
+                }
+            },
+        {% endfor %}
+    };
+
+    var links=[
+        {% for edge in graph.get_edges %}
+            {
+                source: "{{ edge.get_source.get_id }}",
+                target: "{{ edge.get_destination.get_id }}",
+                extensions: {
+                    {% for name, extension in edge.get_extensions %}
+                        {{ extension.get_name }}: "{{ extension.get_raw_data }}",
+                    {% endfor %}
+                }
+            },
+        {% endfor %}
+    ];
+
+    links.forEach(function(link) {
+        link.source = nodes[link.source];
+        link.target = nodes[link.target];
+    });
+
+    var div=d3.select('#main-view-div');
+    var svg=div.select('svg');
+    var svgG = svg.select('#main-view-g');
+    var zoomPanG =svg.select('#main-view-zoom-pan');
+
+    var width = div.style("width").replace("px", "");
+    var height = div.style("height").replace("px", "");
+
+    var force = d3.layout.force()
+        .size([width, height])
+        .nodes(d3.values(nodes))
+        .links(links)
+        .on("tick", tick)
+        .linkDistance(100)
+        .charge(-250)
+        .start();
+
+    svgG.append('defs').append('marker')
+        .attr('id','arrowhead')
+        .attr('viewBox','-0 -5 10 10')
+        .attr('refX',33)
+        .attr('refY',0)
+        .attr('orient','auto')
+        .attr('markerWidth',7)
+        .attr('markerHeight',7)
+        .attr('xoverflow','visible')
+        .append('svg:path')
+        .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+        .attr('fill', '#9ecae1')
+        .style('stroke','none');
+
+    var link = svgG.selectAll('.link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'link')
+        .attr('marker-end','url(#arrowhead)');
+
+    var node = svgG.selectAll('.node')
+        .data(force.nodes())
+        .enter().append('g')
+        .attr('class', 'node')
+        .attr('selected', function(d){return d.selected;})
+        .attr('id', function(d){return d.id;})
+        .on('click',function(){
+            nodeClick(this);
+        });
+
+    d3.selectAll('#main-view-div .node').each(function(d){simpleView(d);});
+
+    var drag = force.drag()
+        .on("dragstart", function(d){ disableZoomPan(); })
+        .on("dragend", function(d){ enableZoomPan(); d.fixed = true});
+
+    function simpleView(d) {
+        d3.select("#main-view-div g#"+d.id)
+            .append('circle')
+            .attr('x',0)
+            .attr('y',0)
+            .attr('r',25)
+            .attr('stroke', d.selected == "True" ? 'red' : 'black')
+            .attr('fill','white');
+
+        d3.select("#main-view-div g#"+d.id)
+            .append('text')
+            .attr('x',0)
+            .attr('y',2.5)
+            .attr('text-anchor','middle')
+            .attr('font-size',10)
+            .attr('font-family','sans-serif')
+            .attr('fill','green')
+            .text(d.name);
+    }
+
+    function tick(e) {
+        node.attr("transform", function(d) {
+            return "translate(" + d.x + "," + d.y + ")";
+        }).call(force.drag);
+
+        link.attr('x1', function(d) { return d.source.x; })
+            .attr('y1', function(d) { return d.source.y; })
+            .attr('x2', function(d) { return d.target.x; })
+            .attr('y2', function(d) { return d.target.y; });
+    }
+
+    function selectMainViewNode(id) {
+        let deselectedNodes = d3.selectAll("#main-view-div g[selected='false']");
+        deselectedNodes.selectAll("circle").attr('stroke', 'black');
+
+        let newSelectedNodes = d3.selectAll("#main-view-div g#" + id);
+        newSelectedNodes.selectAll("circle").attr('stroke', 'red');
+    }
+
+    function getMainViewNodeExtent(id) {
+        var extent = {};
+        var x, y;
+        var g = d3.selectAll("#main-view-div g#" + id)
+            .each(function(d) {
+                x = d.x;
+                y = d.y;
+            });
+        var circle = d3.select("#main-view-div g#" + id + " circle");
+        var r = +circle.attr("r");
+        extent.x1 = x - r;
+        extent.x2 = x + r;
+        extent.y1 = y - r;
+        extent.y2 = y + r;
+        return extent;
+    }
+
+</script>

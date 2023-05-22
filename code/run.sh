@@ -14,8 +14,8 @@ lay_egs() {
 run_server() {
   # The Django website path is sent as the first argument
   cd $1
-  python manage.py makemigrations
-  python manage.py migrate
+  #python manage.py makemigrations
+  #python manage.py migrate
   python manage.py runserver
 }
 
@@ -26,4 +26,5 @@ source clean.sh
 lay_egs Core
 lay_egs TestParser
 lay_egs VlafaParser
+lay_egs SimpleVisualizer
 run_server django_project
