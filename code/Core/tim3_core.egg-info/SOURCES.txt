@@ -15,6 +15,7 @@ core/services/visualizator.py
 core/static/d3.v3.js
 core/static/style.css
 core/templates/index.html
+core/templates/parse_and_display.html
 tim3_core.egg-info/PKG-INFO
 tim3_core.egg-info/SOURCES.txt
 tim3_core.egg-info/dependency_links.txt

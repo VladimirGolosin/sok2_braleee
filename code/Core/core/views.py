@@ -5,11 +5,17 @@ from django.shortcuts import render, redirect
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
     viz = apps.get_app_config('core').plugini_vizualizacija
-    return render(request, "index.html", {"parsers": parseri,"visualizators":viz})
+    ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
+    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi}
+    return render(request, "index.html", context=context)
 
 from django.http import HttpResponse
 
 def parse_and_visualize(request):
+    parseri = apps.get_app_config('core').plugini_ucitavanje
+    viz = apps.get_app_config('core').plugini_vizualizacija
+    ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
+
     if request.method == 'POST':
         selected_parser = request.POST.get('parser')
         selected_visualizer = request.POST.get('visualization')
@@ -23,13 +29,19 @@ def parse_and_visualize(request):
 
         if parser is not None:
             uploaded_file = request.FILES.get('file')
-            print(uploaded_file.name)
             graph = parser.parse(uploaded_file)
-            print(graph)
+
+            add = True
+            for g in ucitani_grafovi:
+                if g.name == graph.name:
+                    add = False
+
+            if add is True:
+                ucitani_grafovi.append(graph)
 
         else:
             print("greska kod parse-ovanja!")
 
     # Retrieve visualizers and render the template
-    viz = apps.get_app_config('core').plugini_vizualizacija
-    return render(request, "index.html", {"parsers": parseri, "visualizators": viz})
+    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi}
+    return render(request, "index.html", context=context)
