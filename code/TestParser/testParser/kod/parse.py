@@ -27,5 +27,5 @@ class DummyParser(ParserService):
                        ]
 
         graf = Graph(nodes=[joza,vlada,bibin,vagner,stevan,kajman], edge_matrix=edge_matrix)
-        graf.name = "Angulu"
+        graf.name = file.name
         return graf

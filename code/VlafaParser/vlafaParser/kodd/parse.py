@@ -27,6 +27,6 @@ class VlafaParser(ParserService):
             [False, True, False, False, False, False]
         ]
 
-        print("ISKULAAAAAAAAAAAAAAAAAA")
-
-        return Graph(name="XDDD", nodes=[joza, vlada, bibin, vagner, stevan, kajman], edge_matrix=edge_matrix)
+        graf = Graph(nodes=[joza, vlada, bibin, vagner, stevan, kajman], edge_matrix=edge_matrix)
+        graf.name = file.name
+        return graf
