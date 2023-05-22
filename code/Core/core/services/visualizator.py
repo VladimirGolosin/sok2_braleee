@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from Core.core.model.models import Graph
+from core.model.models import Graph
 
 
 class VisualizatorService(ABC):
