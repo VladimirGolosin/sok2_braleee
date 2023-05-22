@@ -43,5 +43,19 @@ def parse_and_visualize(request):
             print("greska kod parse-ovanja!")
 
     # Retrieve visualizers and render the template
-    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi}
+    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi,"lmao":"mento miento"}
+    return render(request, "index.html", context=context)
+
+def load_and_visualize(request):
+    parseri = apps.get_app_config('core').plugini_ucitavanje
+    viz = apps.get_app_config('core').plugini_vizualizacija
+    ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
+
+    if request.method == 'POST':
+        selected_graph = request.POST.get('graph')
+        selected_visualizer = request.POST.get('visualization')
+
+        #itd itd
+
+    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi, "lmao":"aajajajajaja"}
     return render(request, "index.html", context=context)

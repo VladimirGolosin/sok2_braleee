@@ -15,7 +15,7 @@
         </div>
 
         <div class="selections">
-            <form id="parse-form" action="/parse_and_visualize">
+            <form id="parameters-form">
                 {% csrf_token %}
                 <div class="selections-row">
                     <select id="visualizator-selection" name="visualization">
@@ -59,9 +59,10 @@
 
         const csrftoken = getCookie('csrftoken');
 
-        // Add an event listener to the button
+        // Add event listeners to the buttons
         const parseButton = document.getElementById('parse-file-button');
         parseButton.addEventListener('click', () => {
+            event.preventDefault();
             // Get the selected values
             const visualizatorSelection = document.getElementById('visualizator-selection').value;
             const parserSelection = document.getElementById('parser-selection').value;
@@ -83,7 +84,40 @@
             })
                 .then(response => {
                     // Handle the response as needed
+                    window.location.href = '/parse_and_visualize';
                     console.log(response);
+                })
+                .catch(error => {
+                    // Handle any errors
+                    console.error(error);
+                });
+        });
+
+        const loadButton = document.getElementById('load-graph-button');
+        loadButton.addEventListener('click', () => {
+            event.preventDefault();
+            // Get the selected values
+            const visualizatorSelection = document.getElementById('visualizator-selection').value;
+            const graphSelection = document.getElementById('graph-selection').value;
+
+            // Create a FormData object to send the data
+            const formData = new FormData();
+            formData.append('visualization', visualizatorSelection);
+            formData.append('graph', graphSelection);
+
+            // Send a POST request to the desired URL
+            fetch('/load_and_visualize', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData,
+            })
+                .then(response => {
+                    // Handle the response as needed
+                    window.location.href = '/load_and_visualize';
+                    console.log(response);
+
                 })
                 .catch(error => {
                     // Handle any errors
@@ -92,14 +126,13 @@
         });
     </script>
 
-
     <div class="upper">
         <div class="tree-view border-frame">
             {#                 ovde ide svg za tree view#}
         </div>
 
         <div class="main-visual border-frame" id="main-div">
-
+                <h1>{{ lmao }}</h1>
         </div>
     </div>
 
