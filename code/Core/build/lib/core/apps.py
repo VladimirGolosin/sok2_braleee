@@ -8,7 +8,7 @@ class CoreConfig(AppConfig):
     plugini_vizualizacija = []
 
     def ready(self):
-        self.plugini_ucitavanje = load_plugins("parse")
+        self.plugini_ucitavanje = load_plugins("parsiranje")
         self.plugini_vizualizacija = load_plugins("visualization") #TODO: promeniti ovo u pluginima
         print("AAAAAAAAA")
         print("br ucitavanje",len(self.plugini_ucitavanje))

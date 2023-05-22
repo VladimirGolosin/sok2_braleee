@@ -1,0 +1,2 @@
+[parsiranje]
+dummy_parse_vlafa = vlafaParser.kodd.parse:VlafaParser

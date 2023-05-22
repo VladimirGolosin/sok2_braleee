@@ -1,5 +1,6 @@
 import uuid
 
+
 class Node:
 
     def __init__(self, **kwargs):
@@ -41,20 +42,30 @@ class Node:
             return self._id == other.id
         return False
 
+
 class Graph:
 
     def __init__(self, **kwargs):
         self._id = uuid.uuid4()
         self._nodes = kwargs.get("nodes", [])
+        self._name = kwargs.get("nodeName", None)
         self._edge_matrix = kwargs.get("edge_matrix", None)
 
     @property
     def nodes(self):
         return self._nodes
 
+    @property
+    def name(self):
+        return self._name
+
     @nodes.setter
     def nodes(self, value):
         self._nodes = value
+
+    @name.setter
+    def name(self, value: str):
+        self._name = value
 
     @property
     def edge_matrix(self):
@@ -64,3 +75,12 @@ class Graph:
     def edge_matrix(self, value):
         self._edge_matrix = value
 
+    def __str__(self):
+        ime = self.name
+        if self._name is None:
+            ime = "none"
+        text = "ime:" + ime + "\n"
+        text += "broj cvorova: " + (str(len(self.nodes)))
+        for n in self.nodes:
+            text += "\n" + n.name
+        return text

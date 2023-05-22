@@ -11,5 +11,5 @@ class ParserService(ABC):
         pass
 
     @abstractmethod
-    def parse(self, file_path):
+    def parse(self, file):
         pass

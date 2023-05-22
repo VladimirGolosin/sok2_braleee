@@ -14,6 +14,7 @@ remove_eggs() {
 # remove build files from components
 remove_eggs Core
 remove_eggs TestParser
+remove_eggs VlafaParser
 
 # remove db
 cd django_project

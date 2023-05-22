@@ -2,73 +2,117 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     {% load static %}
+    {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}"/>
     <script type="text/javascript" src="{% static 'd3.v3.js' %}"></script>
     <title>SOK Tim3</title>
 </head>
 <body>
-    <div class="wrapper">
-        <nav class="border-frame">
-            <div class="logo">
-                <h1>Team3 Graph Visualizator</h1>
-            </div>
-
-            <div class="selections">
-                <form>
-                    <div class="selections-row">
-                        <select id="visualizator-selection" name="visualization">
-                            <option value="default">select visualizator</option>
-                            {% for visualizator in visualizators %}
-                            <option value="{{ visualiztor.name }}"></option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="selections-row">
-                        <h2>parse and visualize graph from file:</h2>
-                        <select id="parser-selection" name="parser">
-                            <option value="default">select parser</option>
-                            {% for parser in parsers %}
-                                <option value="{{ parser.name }}">{{ parser.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="file" id="file-selection" name="file">
-                        <button type="submit">Parse file</button>
-                    </div>
-                    <div class="selections-row">
-                        <h2>load existing graph:</h2>
-                        <select id="graph-selection" name="graph">
-                            <option value="default">select graph</option>
-                            {% for graph in loaded_graphs %}
-                            <option value="{{ graph.name }}"></option>
-                            {% endfor %}
-                        </select>
-                        <button id="load-graph-button" type="submit">Load graph</button>
-                    </div>
-                </form>
-            </div>
-        </nav>
-
-        <div class="upper">
-            <div class="tree-view border-frame">
-{#                 ovde ide svg za tree view#}
-            </div>
-
-            <div class="main-visual border-frame" id="main-div">
-
-            </div>
+<div class="wrapper">
+    <nav class="border-frame">
+        <div class="logo">
+            <h1>Team3 Graph Visualizator</h1>
         </div>
 
-        <div class="lower">
-            <div class ="bird-view border-frame">
+        <div class="selections">
+            <form id="parse-form" action="/parse_and_visualize">
+                {% csrf_token %}
+                <div class="selections-row">
+                    <select id="visualizator-selection" name="visualization">
+                        <option value="default">select visualizator</option>
+                        {% for visualizator in visualizators %}
+                            <option value="{{ visualizator.name }}">{{ visualizator.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="selections-row">
+                    <h2>parse and visualize graph from file:</h2>
+                    <select id="parser-selection" name="parser">
+                        <option value="default">select parser</option>
+                        {% for parser in parsers %}
+                            <option value="{{ parser.name }}">{{ parser.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="file" id="file-selection" name="file">
+                    <button id="parse-file-button" type="button">Parse file</button>
+                </div>
+                <div class="selections-row">
+                    <h2>load existing graph:</h2>
+                    <select id="graph-selection" name="graph">
+                        <option value="default">select graph</option>
+                        {% for graph in loaded_graphs %}
+                            <option value="{{ graph.name }}">{{ graph.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button id="load-graph-button" type="button">Load graph</button>
+                </div>
+            </form>
+        </div>
+    </nav>
 
-            </div>
+    <script>
+        // Get the CSRF token from the cookie
+        function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+        }
 
-            <div class="search-and-details border-frame">
-                <div class="search"></div>
-                <div class="details"></div>
-            </div>
+        const csrftoken = getCookie('csrftoken');
+
+        // Add an event listener to the button
+        const parseButton = document.getElementById('parse-file-button');
+        parseButton.addEventListener('click', () => {
+            // Get the selected values
+            const visualizatorSelection = document.getElementById('visualizator-selection').value;
+            const parserSelection = document.getElementById('parser-selection').value;
+            const fileSelection = document.getElementById('file-selection').files[0]; // Assuming you want to upload a single file
+
+            // Create a FormData object to send the data
+            const formData = new FormData();
+            formData.append('visualization', visualizatorSelection);
+            formData.append('parser', parserSelection);
+            formData.append('file', fileSelection);
+
+            // Send a POST request to the desired URL
+            fetch('/parse_and_visualize', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData,
+            })
+                .then(response => {
+                    // Handle the response as needed
+                    console.log(response);
+                })
+                .catch(error => {
+                    // Handle any errors
+                    console.error(error);
+                });
+        });
+    </script>
+
+
+    <div class="upper">
+        <div class="tree-view border-frame">
+            {#                 ovde ide svg za tree view#}
+        </div>
+
+        <div class="main-visual border-frame" id="main-div">
+
         </div>
     </div>
+
+    <div class="lower">
+        <div class="bird-view border-frame">
+
+        </div>
+
+        <div class="search-and-details border-frame">
+            <div class="search"></div>
+            <div class="details"></div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

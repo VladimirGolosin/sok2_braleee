@@ -8,7 +8,7 @@ class DummyParser(ParserService):
     def identifier(self):
         return "dummy_parser"
 
-    def parse(self, file_path):
+    def parse(self, file):
 
         joza = Node(nodeName="joza", attributes={"bigfoot":True})
         vlada = Node(nodeName="vlada", attributes={"debuje": True, "jede":"klipcinu"})
@@ -26,4 +26,6 @@ class DummyParser(ParserService):
                        [False,True,False,False,False,False]
                        ]
 
-        return Graph(nodes=[joza,vlada,bibin,vagner,stevan,kajman], edge_matrix=edge_matrix)
+        graf = Graph(nodes=[joza,vlada,bibin,vagner,stevan,kajman], edge_matrix=edge_matrix)
+        graf.name = "Angulu"
+        return graf
