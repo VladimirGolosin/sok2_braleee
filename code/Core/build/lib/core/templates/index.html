@@ -64,7 +64,9 @@
 
     <div class="lower">
         <div class="bird-view border-frame">
-            <svg id="bird-svg"></svg>
+            {% if bird_view %}
+                {{ bird_view|safe }}
+            {% endif %}
         </div>
 
         <div class="search-and-details border-frame">
