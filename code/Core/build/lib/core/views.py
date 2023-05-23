@@ -51,7 +51,8 @@ def parse_and_visualize(request):
 
         if visualizer is not None:
             trenutni_iscrtan_graf = visualizer.visualize(new_graph)
-            print("trenutniiiiiiiii", trenutni_iscrtan_graf)
+            #obavestiti core pošto ovo nije lista
+            apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
 
         else:
             print("greska kod visualizacije!")

@@ -1,40 +1,37 @@
-{% load static %}
-
-<script src="{% static 'd3.min.js' %}"></script>
-<script src="{% static 'd3-zoom.min.js' %}"></script>
-
 <div id="visualization"></div>
-
+<script src="https://d3js.org/d3.v6.min.js"></script>
 <script>
     var nodes = [
-        {% for node in graph.get_nodes %}
+        {% for node in graph.nodes %}
         {
-            id: "{{ node.get_id }}",
-            name: "{{ node.get_name }}"
+            id: "{{ node.id }}",
+            name: "{{ node.name }}"
         },
         {% endfor %}
     ];
 
     var edgeMatrix = [
         {% for row in graph.edge_matrix %}
-        [{{ row|join:", " }}],
+        [{% for value in row %}{% if value %}true{% else %}false{% endif %},{% endfor %}],
         {% endfor %}
     ];
 
     var links = [];
     for (var i = 0; i < edgeMatrix.length; i++) {
         for (var j = 0; j < edgeMatrix[i].length; j++) {
-            if (edgeMatrix[i][j] === 1) {
+            if (edgeMatrix[i][j]) {
+                var sourceNode = nodes[i];
+                var targetNode = nodes[j];
                 links.push({
-                    source: nodes[i].id,
-                    target: nodes[j].id
+                    source: sourceNode.id,
+                    target: targetNode.id
                 });
             }
         }
     }
 
-    var width = document.getElementById("visualization").clientWidth;
-    var height = document.getElementById("visualization").clientHeight;
+    var width = 600;
+    var height = 400;
 
     var svg = d3.select("#visualization")
         .append("svg")
@@ -43,8 +40,20 @@
 
     var simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id(d => d.id))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        .force("charge", d3.forceManyBody().strength(-200))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node.attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            label.attr("x", d => d.x)
+                .attr("y", d => d.y + 5);
+        });
 
     var link = svg.selectAll(".link")
         .data(links)
@@ -63,17 +72,4 @@
         .attr("class", "label")
         .attr("text-anchor", "middle")
         .text(d => d.name);
-
-    simulation.on("tick", () => {
-        link.attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
-
-        node.attr("cx", d => d.x)
-            .attr("cy", d => d.y);
-
-        label.attr("x", d => d.x)
-            .attr("y", d => d.y + 5);
-    });
 </script>

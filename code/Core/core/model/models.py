@@ -2,10 +2,8 @@ import uuid
 
 
 class Node:
-
     def __init__(self, **kwargs):
-
-        self._id = uuid.uuid4()
+        self._id = str(uuid.uuid4())
         self._name = kwargs.get("nodeName", None)
         self._attributes = kwargs.get("attributes", None)
 
