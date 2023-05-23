@@ -30,14 +30,16 @@
     }
   }
 
-  var width = 600;
-  var height = 400;
+  var width = document.getElementById("main-div").clientWidth;
+  var height = document.getElementById("main-div").clientHeight;
 
   var svg = d3
     .select("#visualization")
     .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("width", width )
+    .attr("height", height )
+    .call(d3.zoom().on("zoom", zoomed))
+    .append("g");
 
   var simulation = d3
     .forceSimulation(nodes)
@@ -87,6 +89,10 @@
     .attr("font-size", "12px") // Set the font size of the text
     .text(d => d.name);
 
+  function zoomed(event) {
+    svg.attr("transform", event.transform);
+  }
+
   function dragStarted(event, d) {
     if (!event.active) simulation.alphaTarget(0.3).restart();
     d.fx = d.x;
@@ -103,6 +109,7 @@
     d.fx = null;
     d.fy = null;
   }
+
 </script>
 <style>
   .label, .node circle {
