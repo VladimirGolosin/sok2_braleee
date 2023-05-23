@@ -50,7 +50,31 @@
         </div>
     </nav>
 
+    <div class="upper">
+        <div class="tree-view border-frame">
+            {#                 ovde ide svg za tree view#}
+        </div>
+
+        <div class="main-visual border-frame" id="main-div">
+            {% if rendered_graph %}
+                {{ rendered_graph|safe }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="lower">
+        <div class="bird-view border-frame">
+            <svg id="bird-svg"></svg>
+        </div>
+
+        <div class="search-and-details border-frame">
+            <div class="search"></div>
+            <div class="details"></div>
+        </div>
+    </div>
+
     <script>
+
         // Get the CSRF token from the cookie
         function getCookie(name) {
             const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
@@ -124,30 +148,9 @@
                     console.error(error);
                 });
         });
-    </script>
 
-    <div class="upper">
-        <div class="tree-view border-frame">
-            {#                 ovde ide svg za tree view#}
-        </div>
+</script>
 
-        <div class="main-visual border-frame" id="main-div">
-            {% if rendered_graph %}
-                {{ rendered_graph|safe }}
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="lower">
-        <div class="bird-view border-frame">
-
-        </div>
-
-        <div class="search-and-details border-frame">
-            <div class="search"></div>
-            <div class="details"></div>
-        </div>
-    </div>
 </div>
 </body>
 </html>
