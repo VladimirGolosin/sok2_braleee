@@ -132,7 +132,9 @@
         </div>
 
         <div class="main-visual border-frame" id="main-div">
-                <h1>{{ lmao }}</h1>
+            {% if rendered_graph %}
+                {{ rendered_graph|safe }}
+            {% endif %}
         </div>
     </div>
 

@@ -7,6 +7,7 @@ class CoreConfig(AppConfig):
     plugini_ucitavanje = []
     plugini_vizualizacija = []
     ucitani_grafovi = []
+    trenutni_iscrtan_graf = None
 
     def ready(self):
         self.plugini_ucitavanje = load_plugins("parsiranje")
@@ -19,8 +20,8 @@ def load_plugins(group_tag):
     plugins = []
     for ep in pkg_resources.iter_entry_points(group=group_tag):
         p = ep.load()
-        print("{} {}".format(ep.name, p))
-        print(group_tag)
+        #print("{} {}".format(ep.name, p))
+        #print(group_tag)
         plugin = p()
         plugins.append(plugin)
     return plugins
