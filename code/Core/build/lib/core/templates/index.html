@@ -64,9 +64,7 @@
 
     <div class="lower">
         <div class="bird-view border-frame">
-            {% if bird_view %}
-                {{ bird_view|safe }}
-            {% endif %}
+            <svg id="bird-svg"></svg>
         </div>
 
         <div class="search-and-details border-frame">
@@ -74,6 +72,10 @@
             <div class="details"></div>
         </div>
     </div>
+
+
+
+
 
     <script>
 
@@ -152,6 +154,124 @@
         });
 
 </script>
+
+
+<script>
+  // Add the bird view functionality
+
+  // Get the dimensions of the parent div
+  var birdViewDiv = document.querySelector('.bird-view');
+  var birdViewWidth = birdViewDiv.clientWidth;
+  var birdViewHeight = birdViewDiv.clientHeight;
+
+  // Create SVG for the bird view
+  var birdViewSVG = d3.select(".bird-view")
+    .select("svg")
+    .attr("width", birdViewWidth)
+    .attr("height", birdViewHeight);
+
+  // Create a group (g) element for the bird view links
+  var birdViewLinks = birdViewSVG.append("g");
+
+  // Create a group (g) element for the bird view nodes
+  var birdViewNodes = birdViewSVG.append("g");
+
+  // Clone nodes from the main visual graph
+  var cloneNodes = nodes.map(function (d) {
+    return {
+      id: d.id,
+      name: d.name,
+      x: d.x,
+      y: d.y,
+      color: "#5DADE2", // Set the color to blue
+    };
+  });
+
+  // Update the position and size of the bird view nodes
+  birdViewNodes
+    .selectAll("circle")
+    .data(cloneNodes)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) {
+      return d.x;
+    })
+    .attr("cy", function (d) {
+      return d.y;
+    })
+    .attr("r", function (d) {
+      return Math.max(20, d.name.length * 3);
+    })
+    .style("fill", function (d) {
+      return d.color;
+    });
+
+  // Clone links from the main visual graph
+  var cloneLinks = links.map(function (d) {
+    var sourceNode = cloneNodes.find(function (node) {
+      return node.id === d.source.id;
+    });
+    var targetNode = cloneNodes.find(function (node) {
+      return node.id === d.target.id;
+    });
+
+    return {
+      source: sourceNode,
+      target: targetNode,
+    };
+  });
+
+  // Update the position of the bird view links
+  birdViewLinks
+    .selectAll("line")
+    .data(cloneLinks)
+    .enter()
+    .append("line")
+    .attr("x1", function (d) {
+      return d.source.x;
+    })
+    .attr("y1", function (d) {
+      return d.source.y;
+    })
+    .attr("x2", function (d) {
+      return d.target.x;
+    })
+    .attr("y2", function (d) {
+      return d.target.y;
+    })
+    .style("stroke", "#888") // Set the stroke color to gray
+    .style("stroke-width", 2); // Set the stroke width
+
+  // Disable panning and zooming in bird view
+  birdViewSVG.call(
+    d3.zoom()
+      .on("zoom", null)
+      .scaleExtent([1, 1])
+  );
+
+  // Create node labels in the bird view
+  birdViewNodes
+    .selectAll("text")
+    .data(cloneNodes)
+    .enter()
+    .append("text")
+    .attr("x", function (d) {
+      return d.x;
+    })
+    .attr("y", function (d) {
+      return d.y;
+    })
+    .attr("dy", "0.35em")
+    .attr("text-anchor", "middle")
+    .attr("fill", "black")
+    .attr("font-size", "12px")
+    .text(function (d) {
+      return d.name;
+    });
+</script>
+
+
+
 
 </div>
 </body>

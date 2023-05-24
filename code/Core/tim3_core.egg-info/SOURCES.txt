@@ -2,7 +2,6 @@ setup.py
 core/__init__.py
 core/admin.py
 core/apps.py
-core/prodavnica_view.py
 core/tests.py
 core/urls.py
 core/views.py

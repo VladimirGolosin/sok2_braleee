@@ -88,7 +88,7 @@ nav
     gap: 32px;
 }
 
-.main-visual, bird-view
+.main-visual, .bird-view
 {
     padding: 0rem;
 }
@@ -132,3 +132,8 @@ select, input, button
 {
     margin-left: 16px;
 }
+
+.bird-view svg {
+    pointer-events: none;
+}
+

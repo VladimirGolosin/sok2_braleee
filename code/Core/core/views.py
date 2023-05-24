@@ -1,8 +1,5 @@
 from django.apps.registry import apps
 from django.shortcuts import render, redirect
-from django.template import loader
-from django.template import Template
-
 
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -10,16 +7,6 @@ def index(request):
     ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
     context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi}
     return render(request, "index.html", context=context)
-
-def render_bird_view(trenutni_iscrtan_graf):
-    template = loader.get_template('bird_view.html')
-    context = {"graph": trenutni_iscrtan_graf}
-    return template.render(context)
-
-
-def render_tree_view(trenutni_iscrtan_graf):
-    pass
-
 
 def parse_and_visualize(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -69,18 +56,12 @@ def parse_and_visualize(request):
 
     else:
         print("pozvan je get")
-
-    
-    bird_view = render_bird_view(trenutni_iscrtan_graf)
-    tree_view = render_tree_view(trenutni_iscrtan_graf)
     
     context = {
         "parsers": parseri,
         "visualizators": viz,
         "loaded_graphs": ucitani_grafovi,
-        "rendered_graph": trenutni_iscrtan_graf,
-        "bird_view" : bird_view,
-        "tree_view": tree_view
+        "rendered_graph": trenutni_iscrtan_graf
     }
     return render(request, "index.html", context=context)
 
