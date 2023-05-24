@@ -159,9 +159,10 @@
 <script>
   // Add the bird view functionality
 
-  // Bird view dimensions
-  var birdViewWidth = 200;
-  var birdViewHeight = 150;
+  // Get the dimensions of the parent div
+  var birdViewDiv = document.querySelector('.bird-view.border-frame');
+  var birdViewWidth = birdViewDiv.clientWidth;
+  var birdViewHeight = birdViewDiv.clientHeight;
 
   // Create SVG for the bird view
   var birdViewSVG = d3.select(".bird-view")
@@ -271,9 +272,7 @@
   // Adjust the position of the group (g) elements to match the SVG dimensions
   birdViewLinks.attr("transform", "translate(0,0)");
   birdViewNodes.attr("transform", "translate(0,0)");
-
 </script>
-
 
 
 </div>

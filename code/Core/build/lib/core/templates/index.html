@@ -160,7 +160,7 @@
   // Add the bird view functionality
 
   // Get the dimensions of the parent div
-  var birdViewDiv = document.querySelector('.bird-view');
+  var birdViewDiv = document.querySelector('.bird-view.border-frame');
   var birdViewWidth = birdViewDiv.clientWidth;
   var birdViewHeight = birdViewDiv.clientHeight;
 
@@ -268,9 +268,11 @@
     .text(function (d) {
       return d.name;
     });
+
+  // Adjust the position of the group (g) elements to match the SVG dimensions
+  birdViewLinks.attr("transform", "translate(0,0)");
+  birdViewNodes.attr("transform", "translate(0,0)");
 </script>
-
-
 
 
 </div>
