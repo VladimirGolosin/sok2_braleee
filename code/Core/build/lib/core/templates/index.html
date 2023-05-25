@@ -180,19 +180,18 @@
     const clonedGHeight = clonedGBox.height;
 
     // Calculate the scaling factors to fit the g tag within the bird view SVG
-    const scaleX = birdViewWidth / clonedGWidth;
-    const scaleY = birdViewHeight / clonedGHeight;
+    const scaleX = (birdViewWidth * 0.9) / clonedGWidth;
+    const scaleY = (birdViewHeight * 0.9) / clonedGHeight;
     const scale = Math.min(scaleX, scaleY);
 
     // Apply the scaling to the g tag
     const translateX = (birdViewWidth - clonedGWidth * scale) / 2 - clonedGBox.x * scale;
     const translateY = (birdViewHeight - clonedGHeight * scale) / 2 - clonedGBox.y * scale;
     clonedG.setAttribute('transform', `translate(${translateX},${translateY}) scale(${scale})`);
-
-    // Color the bird view SVG red for debugging
-    birdViewSvg.style.backgroundColor = 'red';
+      
   }
 </script>
+
 
 
 </div>
