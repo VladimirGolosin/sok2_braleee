@@ -164,9 +164,9 @@
     // Clear any existing content in the bird view SVG
     birdViewSvg.innerHTML = '';
 
-    // Clone the visualization SVG and insert it into the bird view SVG
-    const clonedSvg = visualizationSvg.cloneNode(true);
-    birdViewSvg.appendChild(clonedSvg);
+    // Clone the visualization SVG's g tag and insert it into the bird view SVG
+    const clonedG = visualizationSvg.querySelector('g').cloneNode(true);
+    birdViewSvg.appendChild(clonedG);
 
     // Set the bird view SVG size to match the container size
     const birdViewWidth = birdViewContainer.clientWidth;
@@ -174,19 +174,22 @@
     birdViewSvg.setAttribute('width', birdViewWidth);
     birdViewSvg.setAttribute('height', birdViewHeight);
 
-    // Scale the contents of the bird view SVG to fit within the SVG
+    // Scale the g tag to fit within the bird view SVG
     const visualizationWidth = visualizationSvg.getAttribute('width');
     const visualizationHeight = visualizationSvg.getAttribute('height');
     const scaleX = birdViewWidth / visualizationWidth;
     const scaleY = birdViewHeight / visualizationHeight;
     const scale = Math.min(scaleX, scaleY);
-    const g = birdViewSvg.querySelector('g');
-    g.setAttribute('transform', `scale(${scale})`);
+
+    // Apply the scaling to the g tag
+    clonedG.setAttribute('transform', `scale(${scale})`);
 
     // Color the bird view SVG red for debugging
     birdViewSvg.style.backgroundColor = 'red';
   }
 </script>
+
+
 
 </div>
 </body>
