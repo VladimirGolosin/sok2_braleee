@@ -159,20 +159,34 @@
   function copyGraphToBirdView() {
     const visualizationSvg = document.getElementById('visualization').querySelector('svg');
     const birdViewSvg = document.getElementById('bird-svg');
+    const birdViewContainer = document.querySelector('.bird-view.border-frame');
 
     // Clear any existing content in the bird view SVG
     birdViewSvg.innerHTML = '';
 
-    // Clone and insert each child element of the visualization SVG into the bird view SVG
-    visualizationSvg.childNodes.forEach(node => {
-      const clonedNode = node.cloneNode(true);
-      birdViewSvg.appendChild(clonedNode);
-    });
+    // Clone the visualization SVG and insert it into the bird view SVG
+    const clonedSvg = visualizationSvg.cloneNode(true);
+    birdViewSvg.appendChild(clonedSvg);
+
+    // Set the bird view SVG size to match the container size
+    const birdViewWidth = birdViewContainer.clientWidth;
+    const birdViewHeight = birdViewContainer.clientHeight;
+    birdViewSvg.setAttribute('width', birdViewWidth);
+    birdViewSvg.setAttribute('height', birdViewHeight);
+
+    // Scale the contents of the bird view SVG to fit within the SVG
+    const visualizationWidth = visualizationSvg.getAttribute('width');
+    const visualizationHeight = visualizationSvg.getAttribute('height');
+    const scaleX = birdViewWidth / visualizationWidth;
+    const scaleY = birdViewHeight / visualizationHeight;
+    const scale = Math.min(scaleX, scaleY);
+    const g = birdViewSvg.querySelector('g');
+    g.setAttribute('transform', `scale(${scale})`);
+
+    // Color the bird view SVG red for debugging
+    birdViewSvg.style.backgroundColor = 'red';
   }
 </script>
-
-
-
 
 </div>
 </body>
