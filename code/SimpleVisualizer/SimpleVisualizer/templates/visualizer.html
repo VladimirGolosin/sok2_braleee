@@ -1,11 +1,13 @@
 <div id="visualization"></div>
+<p id="node-details"></p>
 <script src="https://d3js.org/d3.v6.min.js"></script>
 <script>
   var nodes = [
     {% for node in graph.nodes %}
     {
       id: "{{ node.id }}",
-      name: "{{ node.name }}"
+      name: "{{ node.name }}",
+      attributes: [{"key1":"value1"},{"key2":"value2"}]
     },
     {% endfor %}
   ];
@@ -88,6 +90,29 @@
     .attr("fill", "black")
     .attr("font-size", "12px") // Set the font size of the text
     .text(d => d.name);
+
+  node.on("click", handleNodeClick); // Add this line
+
+    function handleNodeClick(event, d) {
+  // Reset node colors to blue
+  node.selectAll("circle").style("fill", "#5DADE2");
+
+  // Get the node details
+  var nodeDetails = "<b>" + d.name + "</b><br><br>";
+  var attributes = d.attributes;
+  for (var attr in attributes) {
+    nodeDetails += attr + ": " + attributes[attr] + "<br>";
+  }
+
+  // Update the node details text in index.html
+  d3.select(parent.document).select(".node-details").html(nodeDetails);
+
+  // Color the clicked node red
+  d3.select(this).select("circle").style("fill", "red");
+}
+
+
+
 
   function zoomed(event) {
     svg.attr("transform", event.transform);
