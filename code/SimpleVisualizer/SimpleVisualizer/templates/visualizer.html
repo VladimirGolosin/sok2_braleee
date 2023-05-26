@@ -89,25 +89,29 @@
 
   node.on("click", handleNodeClick); // Add this line
 
-  function handleNodeClick(event, d) {
-  // Reset node colors to blue
-  node.selectAll("circle").style("fill", "#5DADE2");
+   function handleNodeClick(event, d) {
+    // Reset node colors to blue
+    node.selectAll("circle").style("fill", "#5DADE2");
 
-  // Get the node details via AJAX request
-  var url = "/get_data/" + d.id;
+    // Get the node details via AJAX request
+    var url = "/get_data/" + d.id;
 
-  d3.json(url).then(function(response) {
-    // Extract the message from the response
-    var message = response.message;
+    d3.json(url).then(function(response) {
+      // Extract the message from the response
+      var message = response.message;
 
-    // Replace the content of the node-details paragraph
-    var nodeDetails = d3.select(".details .node-details");
-    nodeDetails.html(message);
-  });
+      // Replace the content of the node-details paragraph
+      var nodeDetails = d3.select(".details .node-details");
+      nodeDetails.html(message);
+    });
 
-  // Color the clicked node red
-  d3.select(this).select("circle").style("fill", "red");
-}
+    // Color the clicked node red
+    d3.select(this).select("circle").style("fill", "red");
+
+    // Call the copyGraphToBirdView function
+    copyGraphToBirdView();
+  }
+
 
 
 
