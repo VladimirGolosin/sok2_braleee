@@ -8,6 +8,7 @@ class CoreConfig(AppConfig):
     plugini_vizualizacija = []
     ucitani_grafovi = []
     trenutni_iscrtan_graf = None
+    trenutni_graf = None
 
     def ready(self):
         self.plugini_ucitavanje = load_plugins("parsiranje")

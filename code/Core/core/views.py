@@ -50,7 +50,7 @@ def parse_and_visualize(request):
             trenutni_iscrtan_graf = visualizer.visualize(new_graph)
             #obavestiti core pošto ovo nije lista
             apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
-            print(trenutni_iscrtan_graf)
+            apps.get_app_config('core').trenutni_graf = new_graph
 
         else:
             print("greska kod visualizacije!")
@@ -71,12 +71,42 @@ def load_and_visualize(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
     viz = apps.get_app_config('core').plugini_vizualizacija
     ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
+    trenutni_iscrtan_graf = apps.get_app_config('core').trenutni_iscrtan_graf
 
     if request.method == 'POST':
         selected_graph = request.POST.get('graph')
         selected_visualizer = request.POST.get('visualization')
 
-        #itd itd
+        print("selektovaniii", selected_graph)
+        graph_to_display = None
+        for g in ucitani_grafovi:
+            if g.name == selected_graph:
+                graph_to_display = g
+                print("nasao sam grafff",graph_to_display)
+                break
 
-    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi,"rendered_graph":"lmao"}
+        visualizer = None
+        for v in viz:
+            if v.name() == selected_visualizer:
+                visualizer = v
+                break
+
+        if visualizer and graph_to_display:
+            trenutni_iscrtan_graf = visualizer.visualize(graph_to_display)
+            # obavestiti core pošto ovo nije lista
+            apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
+            apps.get_app_config('core').trenutni_graf = graph_to_display
+
+        else:
+            print("greska kod visualizacije!")
+
+    else:
+        print("pozvan je get")
+
+    context = {
+        "parsers": parseri,
+        "visualizators": viz,
+        "loaded_graphs": ucitani_grafovi,
+        "rendered_graph": trenutni_iscrtan_graf
+    }
     return render(request, "index.html", context=context)

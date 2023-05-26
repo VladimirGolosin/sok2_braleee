@@ -82,3 +82,8 @@ class Graph:
         for n in self.nodes:
             text += "\n" + n.name
         return text
+
+    def __eq__(self, other):
+        if isinstance(other, Node):
+            return self._id == other.id
+        return False
