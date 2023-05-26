@@ -92,6 +92,18 @@
         const parserSelection = document.getElementById('parser-selection').value;
         const fileSelection = document.getElementById('file-selection').files[0]; // Assuming you want to upload a single file
 
+        // Check if a visualizer is selected
+        if (visualizatorSelection === 'default') {
+            alert('Please select a visualizer before parsing the file.');
+            return;
+        }
+
+        // Check if a parser is selected
+        if (parserSelection === 'default') {
+            alert('Please select a parser before parsing the file.');
+            return;
+        }
+
         // Create a FormData object to send the data
         const formData = new FormData();
         formData.append('visualization', visualizatorSelection);
@@ -124,6 +136,18 @@
         const visualizatorSelection = document.getElementById('visualizator-selection').value;
         const graphSelection = document.getElementById('graph-selection').value;
 
+        // Check if a visualizer is selected
+        if (visualizatorSelection === 'default') {
+            alert('Please select a visualizer before loading the graph.');
+            return;
+        }
+
+        // Check if a graph is selected
+        if (graphSelection === 'default') {
+            alert('Please select a graph before loading.');
+            return;
+        }
+
         // Create a FormData object to send the data
         const formData = new FormData();
         formData.append('visualization', visualizatorSelection);
@@ -147,6 +171,7 @@
                 console.error(error);
             });
     });
+
 </script>
 
 <script>
