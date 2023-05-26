@@ -40,6 +40,18 @@ class Node:
             return self._id == other.id
         return False
 
+    def getNodeDetails(self):
+        details = ""
+
+        # Get the node name
+        details += "<b>" + str(self._name) + "</b>" + "<br><br>"
+
+        # Iterate over the node attributes and their values
+        for attribute, value in self._attributes.items():
+            details += attribute + ": " + str(value) + "<br>"
+
+        return details
+
 
 class Graph:
 

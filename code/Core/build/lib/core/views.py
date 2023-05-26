@@ -1,5 +1,8 @@
+import uuid
+
 from django.apps.registry import apps
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -110,3 +113,22 @@ def load_and_visualize(request):
         "rendered_graph": trenutni_iscrtan_graf
     }
     return render(request, "index.html", context=context)
+import json
+from django.http import JsonResponse
+
+def get_data(request, node_id):
+    text = "xd"
+
+    print(apps.get_app_config('core').trenutni_graf.nodes)
+    for n in apps.get_app_config('core').trenutni_graf.nodes:
+        print("aaaaa",n.id,node_id)
+        print(type(node_id),type(n.id))
+        if n.id == node_id:
+            print("jooooooooooooooj")
+            text = n.getNodeDetails()  # Corrected method name
+
+    data = {
+        'message': text,
+    }
+
+    return JsonResponse(data)

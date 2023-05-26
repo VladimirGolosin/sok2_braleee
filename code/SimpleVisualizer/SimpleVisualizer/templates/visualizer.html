@@ -1,13 +1,11 @@
 <div id="visualization"></div>
-<p id="node-details"></p>
 <script src="https://d3js.org/d3.v6.min.js"></script>
 <script>
   var nodes = [
     {% for node in graph.nodes %}
     {
       id: "{{ node.id }}",
-      name: "{{ node.name }}",
-      attributes: [{"key1":"value1"},{"key2":"value2"}]
+      name: "{{ node.name }}"
     },
     {% endfor %}
   ];
@@ -38,8 +36,8 @@
   var svg = d3
     .select("#visualization")
     .append("svg")
-    .attr("width", width )
-    .attr("height", height )
+    .attr("width", width)
+    .attr("height", height)
     .call(d3.zoom().on("zoom", zoomed))
     .append("g");
 
@@ -73,9 +71,7 @@
     .enter()
     .append("g")
     .attr("class", "node")
-    .call(
-      d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded)
-    );
+    .call(d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded));
 
   node
     .append("circle")
@@ -93,24 +89,25 @@
 
   node.on("click", handleNodeClick); // Add this line
 
-    function handleNodeClick(event, d) {
+  function handleNodeClick(event, d) {
   // Reset node colors to blue
   node.selectAll("circle").style("fill", "#5DADE2");
 
-  // Get the node details
-  var nodeDetails = "<b>" + d.name + "</b><br><br>";
-  var attributes = d.attributes;
-  for (var attr in attributes) {
-    nodeDetails += attr + ": " + attributes[attr] + "<br>";
-  }
+  // Get the node details via AJAX request
+  var url = "/get_data/" + d.id;
 
-  // Update the node details text in index.html
-  d3.select(parent.document).select(".node-details").html(nodeDetails);
+  d3.json(url).then(function(response) {
+    // Extract the message from the response
+    var message = response.message;
+
+    // Replace the content of the node-details paragraph
+    var nodeDetails = d3.select(".details .node-details");
+    nodeDetails.html(message);
+  });
 
   // Color the clicked node red
   d3.select(this).select("circle").style("fill", "red");
 }
-
 
 
 
@@ -134,14 +131,15 @@
     d.fx = null;
     d.fy = null;
   }
-
 </script>
 <style>
-  .label, .node circle {
+  .label,
+  .node circle {
     cursor: grab;
   }
 
-  .label:hover, .node circle:hover {
+  .label:hover,
+  .node circle:hover {
     cursor: grabbing;
   }
 </style>
