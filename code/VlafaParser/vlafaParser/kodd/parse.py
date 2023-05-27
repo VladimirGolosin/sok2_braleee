@@ -11,11 +11,11 @@ class VlafaParser(ParserService):
         return "dummy_parser_vlafa"
 
     def parse(self, file):
-        joza = Node(nodeName="rxlja", attributes={"bigfoot": True})
-        vlada = Node(nodeName="prlina", attributes={"debuje": True, "jede": "klipcinu"})
-        bibin = Node(nodeName="xi jinping", attributes={"vraca": "Konstantinopolj", "od": 1999})
+        joza = Node(nodeName="rxlja", attributes={"bigfoot": True, "pozdrav":"joooj"})
+        vlada = Node(nodeName="prlina", attributes={"debuje": True, "jede": "klipcinu",})
+        bibin = Node(nodeName="xi jinping", attributes={"predsednik": "kine", "od": 1389, "pozdrav":"vazap beijing"})
         vagner = Node(nodeName="bashar al assad", attributes={"dani_borbe": 123})
-        stevan = Node(nodeName="xd", attributes={"lokacija": "bulevar"})
+        stevan = Node(nodeName="dexter", attributes={"lokacija": "bulevar", "pozdrav":"ok dexterrr"})
         kajman = Node(nodeName="bro", attributes={"jede": "kfc"})
 
         edge_matrix = [

@@ -3,6 +3,7 @@ import uuid
 from django.apps.registry import apps
 from django.shortcuts import render
 from django.http import JsonResponse
+from core.model.models import Node, Graph
 
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -47,7 +48,7 @@ def parse_and_visualize(request):
         for v in viz:
             if v.name() == selected_visualizer:
                 visualizer = v
-                apps.get_app_config('core').trenutni_visualizator = v
+                apps.get_app_config('core').trenutni_vizualizator = v
                 break
 
         if visualizer is not None:
@@ -93,7 +94,7 @@ def load_and_visualize(request):
         for v in viz:
             if v.name() == selected_visualizer:
                 visualizer = v
-                apps.get_app_config('core').trenutni_visualizator = v
+                apps.get_app_config('core').trenutni_vizualizator = v
                 break
 
         if visualizer and graph_to_display:
@@ -123,10 +124,7 @@ def get_data(request, node_id):
 
     print(apps.get_app_config('core').trenutni_graf.nodes)
     for n in apps.get_app_config('core').trenutni_graf.nodes:
-        print("aaaaa",n.id,node_id)
-        print(type(node_id),type(n.id))
         if n.id == node_id:
-            print("jooooooooooooooj")
             text = n.getNodeDetails()  # Corrected method name
 
     data = {
@@ -135,8 +133,49 @@ def get_data(request, node_id):
 
     return JsonResponse(data)
 
+
+def search_graph(graph, search_text):
+    new_graph = Graph(nodes=[], name=graph.name)
+    node_mapping = {}
+
+    for index, node in enumerate(graph.nodes):
+        found = False
+        if search_text in str(node):
+            found = True
+        else:
+            for value in node.attributes.values():
+                if search_text in str(value):
+                    found = True
+                    break
+
+        if found:
+            new_graph.nodes.append(node)
+            node_mapping[index] = len(new_graph.nodes) - 1
+
+    new_edge_matrix = []
+    for _ in range(len(new_graph.nodes)):
+        new_edge_matrix.append([False] * len(new_graph.nodes))
+
+    for i in range(len(graph.nodes)):
+        for j in range(len(graph.nodes)):
+            if i in node_mapping and j in node_mapping:
+                new_i = node_mapping[i]
+                new_j = node_mapping[j]
+                new_edge_matrix[new_i][new_j] = graph.edge_matrix[i][j]
+
+    new_graph.edge_matrix = new_edge_matrix
+    return new_graph
+
+
+
+
 def search(request, search_text):
-    print(search_text)
+    viz = apps.get_app_config('core').trenutni_vizualizator
+    pretrazen_graf = search_graph(apps.get_app_config('core').trenutni_graf, search_text)
+    trenutni_iscrtan_graf = viz.visualize(pretrazen_graf)
+    # obavestiti core pošto ovo nije lista
+    apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
+    apps.get_app_config('core').trenutni_graf = pretrazen_graf
 
     context = {
         "parsers": apps.get_app_config('core').plugini_ucitavanje,
@@ -149,7 +188,12 @@ def search(request, search_text):
 
 
 def filter(request, filter_text):
-    print(filter_text)
+    viz = apps.get_app_config('core').trenutni_vizualizator
+    filtriran_graf = search_graph(apps.get_app_config('core').trenutni_graf, filter_text)
+    trenutni_iscrtan_graf = viz.visualize(filtriran_graf)
+    # obavestiti core pošto ovo nije lista
+    apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
+    apps.get_app_config('core').trenutni_graf = filtriran_graf
 
     context = {
         "parsers": apps.get_app_config('core').plugini_ucitavanje,
