@@ -137,3 +137,45 @@ select, input, button
     pointer-events: none;
 }
 
+.search-and-details{
+    display: flex;
+    flex-direction: row;
+}
+
+.search-and-details h2
+{
+    color: black;
+    font-size: 18px;
+
+}
+
+#search-filter-input
+{
+    min-width: 300px;
+    font-size: 18px;
+    border-style: solid;
+    margin-bottom: 16px;
+}
+
+.sf-button
+{
+    font-size: 18px;
+    border-style: solid;
+}
+
+.search-and-details-inner{
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+
+.search
+{
+    flex: 1
+}
+
+.details {
+  flex: 1;
+  height: 100%;
+  overflow: auto; /* Add this line to enable scrolling */
+}

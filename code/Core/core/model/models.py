@@ -28,17 +28,28 @@ class Node:
         self._attributes = value
 
     def __str__(self):
-        text = self.name
-        for i in self._attributes:
-            text += "\n"
-            text += text + i
-            text += ": " + self._attributes[i]
+        text = str(self.name)
+        if self.attributes:
+            for key, value in self.attributes.items():
+                text += "\n" + str(key) + ": " + str(value)
         return text
 
     def __eq__(self, other):
         if isinstance(other, Node):
             return self._id == other.id
         return False
+
+    def getNodeDetails(self):
+        details = ""
+
+        # Get the node name
+        details += "<b>" + str(self._name) + "</b>" + "<br><br>"
+
+        # Iterate over the node attributes and their values
+        for attribute, value in self._attributes.items():
+            details += attribute + ": " + str(value) + "<br>"
+
+        return details
 
 
 class Graph:
@@ -82,3 +93,8 @@ class Graph:
         for n in self.nodes:
             text += "\n" + n.name
         return text
+
+    def __eq__(self, other):
+        if isinstance(other, Node):
+            return self._id == other.id
+        return False
