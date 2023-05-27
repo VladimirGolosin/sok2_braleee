@@ -1,8 +1,8 @@
 import uuid
 
 from django.apps.registry import apps
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import render
+from django.http import JsonResponse
 
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -47,6 +47,7 @@ def parse_and_visualize(request):
         for v in viz:
             if v.name() == selected_visualizer:
                 visualizer = v
+                apps.get_app_config('core').trenutni_visualizator = v
                 break
 
         if visualizer is not None:
@@ -92,6 +93,7 @@ def load_and_visualize(request):
         for v in viz:
             if v.name() == selected_visualizer:
                 visualizer = v
+                apps.get_app_config('core').trenutni_visualizator = v
                 break
 
         if visualizer and graph_to_display:
@@ -113,8 +115,8 @@ def load_and_visualize(request):
         "rendered_graph": trenutni_iscrtan_graf
     }
     return render(request, "index.html", context=context)
-import json
-from django.http import JsonResponse
+
+
 
 def get_data(request, node_id):
     text = "xd"
@@ -132,3 +134,15 @@ def get_data(request, node_id):
     }
 
     return JsonResponse(data)
+
+def search(request, search_text):
+    print(search_text)
+
+    context = {
+        "parsers": apps.get_app_config('core').plugini_ucitavanje,
+        "visualizators": apps.get_app_config('core').plugini_vizualizacija,
+        "loaded_graphs": apps.get_app_config('core').ucitani_grafovi,
+        "rendered_graph": apps.get_app_config('core').trenutni_iscrtan_graf,
+        "search_filter_current_text": search_text,
+    }
+    return render(request, "index.html", context=context)
