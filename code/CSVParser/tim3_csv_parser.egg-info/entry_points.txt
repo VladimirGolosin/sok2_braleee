@@ -1,0 +1,2 @@
+[parsiranje]
+dummy_parse = CSVParser.kod.parse:DummyParser

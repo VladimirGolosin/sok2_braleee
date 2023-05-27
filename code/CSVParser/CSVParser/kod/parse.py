@@ -3,10 +3,10 @@ from core.services.parser import ParserService
 class DummyParser(ParserService):
 
     def name(self):
-        return "Dummy parser"
+        return "CSV parser"
 
     def identifier(self):
-        return "dummy_parser"
+        return "csv_parser"
 
     def parse(self, file):
 

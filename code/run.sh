@@ -25,6 +25,7 @@ source clean.sh
 # build components
 lay_egs Core
 lay_egs TestParser
+lay_egs CSVParser
 lay_egs VlafaParser
 lay_egs SimpleVisualizer
 run_server django_project
