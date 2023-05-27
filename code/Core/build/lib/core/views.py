@@ -4,6 +4,7 @@ from django.apps.registry import apps
 from django.shortcuts import render
 from django.http import JsonResponse
 from core.model.models import Node, Graph
+from datetime import datetime
 
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -82,12 +83,11 @@ def load_and_visualize(request):
         selected_graph = request.POST.get('graph')
         selected_visualizer = request.POST.get('visualization')
 
-        print("selektovaniii", selected_graph)
+
         graph_to_display = None
         for g in ucitani_grafovi:
             if g.name == selected_graph:
                 graph_to_display = g
-                print("nasao sam grafff",graph_to_display)
                 break
 
         visualizer = None
@@ -122,7 +122,6 @@ def load_and_visualize(request):
 def get_data(request, node_id):
     text = "xd"
 
-    print(apps.get_app_config('core').trenutni_graf.nodes)
     for n in apps.get_app_config('core').trenutni_graf.nodes:
         if n.id == node_id:
             text = n.getNodeDetails()  # Corrected method name
@@ -186,10 +185,89 @@ def search(request, search_text):
     }
     return render(request, "index.html", context=context)
 
+def filter_graph(graph, filter_text):
+    new_graph = Graph(nodes=[], name=graph.name)
+    node_mapping = {}
+
+    # Parse the filter_text into attribute_name, operator, and value
+    filter_parts = filter_text.split(' ')
+    if len(filter_parts) != 3:
+        return graph  # Return the original graph if filter text is invalid
+
+    attribute_name, operator, filter_value = filter_parts
+
+    for index, node in enumerate(graph.nodes):
+        if attribute_name in node.attributes:
+            attribute_value = node.attributes[attribute_name]
+            if compare_values(attribute_value, operator, filter_value):
+                new_graph.nodes.append(node)
+                node_mapping[index] = len(new_graph.nodes) - 1
+
+    new_edge_matrix = [[False] * len(new_graph.nodes) for _ in range(len(new_graph.nodes))]
+
+    for i in range(len(graph.nodes)):
+        for j in range(len(graph.nodes)):
+            if i in node_mapping and j in node_mapping:
+                new_i = node_mapping[i]
+                new_j = node_mapping[j]
+                new_edge_matrix[new_i][new_j] = graph.edge_matrix[i][j]
+
+    new_graph.edge_matrix = new_edge_matrix
+    return new_graph
+
+
+from datetime import datetime
+
+def compare_values(value, operator, filter_value):
+    # Handle boolean comparisons
+    if isinstance(value, bool):
+        filter_value = filter_value.lower()
+        if filter_value == "true":
+            filter_value = True
+        elif filter_value == "false":
+            filter_value = False
+        else:
+            return False
+
+    # Handle date comparisons
+    if isinstance(value, datetime):
+        try:
+            filter_value = datetime.strptime(filter_value, "%Y-%m-%d")
+        except ValueError:
+            return False
+
+    # Convert filter_value to the appropriate type based on the type of value
+    try:
+        if isinstance(value, int):
+            filter_value = int(filter_value)
+        elif isinstance(value, float):
+            filter_value = float(filter_value)
+        elif isinstance(value, str):
+            filter_value = str(filter_value)
+    except ValueError:
+        return False
+
+    # Perform the comparison based on the operator and the type of value
+    if operator == '==':
+        return value == filter_value
+    elif operator == '>':
+        return value > filter_value
+    elif operator == '>=':
+        return value >= filter_value
+    elif operator == '<':
+        return value < filter_value
+    elif operator == '<=':
+        return value <= filter_value
+    elif operator == '!=':
+        return value != filter_value
+    else:
+        return False
+
+
 
 def filter(request, filter_text):
     viz = apps.get_app_config('core').trenutni_vizualizator
-    filtriran_graf = search_graph(apps.get_app_config('core').trenutni_graf, filter_text)
+    filtriran_graf = filter_graph(apps.get_app_config('core').trenutni_graf, filter_text)
     trenutni_iscrtan_graf = viz.visualize(filtriran_graf)
     # obavestiti core pošto ovo nije lista
     apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf

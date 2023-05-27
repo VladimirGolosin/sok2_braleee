@@ -10,12 +10,12 @@ class DummyParser(ParserService):
 
     def parse(self, file):
 
-        joza = Node(nodeName="joza", attributes={"bigfoot":True})
-        vlada = Node(nodeName="vlada", attributes={"debuje": True, "jede":"klipcinu"})
-        bibin = Node(nodeName="bibin", attributes={"vraca": "Konstantinopolj", "od": 1999})
-        vagner = Node(nodeName="vagner", attributes={"dani_borbe": 123})
-        stevan = Node(nodeName="stevan", attributes={"lokacija": "bulevar"})
-        kajman = Node(nodeName="kajman", attributes={"jede": "kfc"})
+        joza = Node(nodeName="joza", attributes={"bigfoot":True, "visina":187, "lokacija":"kikinda"})
+        vlada = Node(nodeName="vlada", attributes={"debuje": True, "jede":"klipcinu", "visina":172, "lokacija":"livade"})
+        bibin = Node(nodeName="bibin", attributes={"vraca": "Konstantinopolj", "od": 1999, "visina":187,"lokacija":"livade"})
+        vagner = Node(nodeName="vagner", attributes={"dani_borbe": 123, "visina":177,"lokacija":"bahmut"})
+        stevan = Node(nodeName="stevan", attributes={"lokacija": "bulevar", "visina":190,})
+        kajman = Node(nodeName="kajman", attributes={"jede": "kfc", "visina":200,"lokacija":"zimbabve"})
 
         edge_matrix = [
                        [False,True,True,True,False,False],
