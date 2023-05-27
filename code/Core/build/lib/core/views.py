@@ -146,3 +146,16 @@ def search(request, search_text):
         "search_filter_current_text": search_text,
     }
     return render(request, "index.html", context=context)
+
+
+def filter(request, filter_text):
+    print(filter_text)
+
+    context = {
+        "parsers": apps.get_app_config('core').plugini_ucitavanje,
+        "visualizators": apps.get_app_config('core').plugini_vizualizacija,
+        "loaded_graphs": apps.get_app_config('core').ucitani_grafovi,
+        "rendered_graph": apps.get_app_config('core').trenutni_iscrtan_graf,
+        "search_filter_current_text": filter_text,
+    }
+    return render(request, "index.html", context=context)

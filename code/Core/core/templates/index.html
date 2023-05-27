@@ -210,6 +210,24 @@
 
 </script>
 
+<script>
+    const filterButton = document.getElementById('filter-button');
+    filterButton.addEventListener('click', () => {
+        event.preventDefault();
+        // Get the filter text
+        const filterText = document.getElementById('search-filter-input').value;
+
+        // Check if the filter text is empty
+        if (filterText.trim() === '') {
+            alert('Please enter a filter text.');
+            return;
+        }
+
+        // Redirect to the filter URL with the filter text as a parameter
+        window.location.href = `/filter/${encodeURIComponent(filterText)}`;
+    });
+</script>
+
 
 <script>
   // Call the copyGraphToBirdView function when the simulation ends
