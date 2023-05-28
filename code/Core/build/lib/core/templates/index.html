@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}"/>
-    <script type="text/javascript" src="{% static 'd3.v3.js' %}"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <title>SOK Tim3</title>
 </head>
@@ -283,69 +282,86 @@ function copyGraphToBirdView() {
 </script>
 
 <script>
-  function generateTreeView() {
-  // Get the dimensions of the parent div
-  var treeViewDiv = document.querySelector('.tree-view.border-frame');
-  var width = treeViewDiv.clientWidth;
-  var height = treeViewDiv.clientHeight;
 
-  // Create the SVG element
-  var svg = d3.select("#tree-svg")
+  var width = 800; // Set the desired width of the SVG
+  var height = 400; // Set the desired height of the SVG
+  var nodeRadius = 20; // Set the radius of the nodes
+
+  var svg = d3
+    .select("#tree-svg") // Updated selector to match the ID of the SVG element
+    .append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .call(d3.zoom().on("zoom", zoomed))
+    .append("g");
 
-  // Create a hierarchical structure from the existing data
-  var root = d3.hierarchy(nodes[0]);
+  var rootNode = nodes[0]; // Assuming the first node is the root node
+  var visitedNodes = new Set(); // Set to keep track of visited nodes
 
-  // Create a tree layout and set the node size
-  var treeLayout = d3.tree().size([width, height - 100]);
+  // Create a recursive function to generate the tree view
+  function generateTreeView(node, x, y, depth) {
+    if (visitedNodes.has(node.id)) {
+      return; // If the node has already been visited, return to prevent infinite recursion
+    }
 
-  // Assign unique IDs to each node
-  root.each(function(d) {
-    d.id = d.data.id;
-  });
+    visitedNodes.add(node.id); // Mark the node as visited
 
-  // Generate the tree nodes and links
-  treeLayout(root);
+    var columnWidth = 200; // Set the desired width of each column
+    var columnSpacing = 100; // Set the desired spacing between columns
+    var rowSpacing = 100; // Set the desired spacing between rows
 
-  // Create a group for each node
-  var nodeGroup = svg.selectAll(".node")
-    .data(root.descendants())
-    .enter()
-    .append("g")
-    .attr("class", "node")
-    .attr("transform", function(d) {
-      return "translate(" + d.x + "," + d.y + ")";
-    });
+    // Draw the node
+    svg
+      .append("circle")
+      .attr("cx", x)
+      .attr("cy", y)
+      .attr("r", nodeRadius)
+      .style("fill", "#5DADE2");
 
-  // Add circles for each node
-  nodeGroup.append("circle")
-    .attr("r", 5);
+    svg
+      .append("text")
+      .attr("x", x)
+      .attr("y", y + nodeRadius * 2)
+      .attr("text-anchor", "middle")
+      .attr("fill", "black")
+      .attr("font-size", "12px")
+      .text(node.name);
 
-  // Add text label for each node
-  nodeGroup.append("text")
-    .attr("dy", "0.35em")
-    .attr("text-anchor", "middle")
-    .text(function(d) {
-      return d.data.name;
-    });
+    // Draw the child nodes recursively
+    var childNodes = getChildNodes(node);
+    var numChildNodes = childNodes.length;
 
-  // Create links between nodes
-  var link = svg.selectAll(".link")
-    .data(root.links())
-    .enter()
-    .append("path")
-    .attr("class", "link")
-    .attr("d", function(d) {
-      return "M" + d.source.x + "," + d.source.y +
-        "C" + d.source.x + "," + (d.source.y + d.target.y) / 2 +
-        " " + d.target.x + "," + (d.source.y + d.target.y) / 2 +
-        " " + d.target.x + "," + d.target.y;
-    });
-}
+    if (numChildNodes > 0) {
+      var nextX = x + columnWidth + columnSpacing;
+      var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
 
-  // Call the function to generate the tree view
-  generateTreeView();
+      for (var i = 0; i < numChildNodes; i++) {
+        var childNode = childNodes[i];
+        generateTreeView(childNode, nextX, nextY, depth + 1);
+        nextY += rowSpacing;
+      }
+    }
+  }
+
+  // Helper function to get the child nodes of a given node
+  function getChildNodes(node) {
+    var childNodes = [];
+
+    for (var i = 0; i < nodes.length; i++) {
+      if (edgeMatrix[nodes.indexOf(node)][i]) {
+        childNodes.push(nodes[i]);
+      }
+    }
+
+    return childNodes;
+  }
+
+  function zoomed(event) {
+    svg.attr("transform", event.transform);
+  }
+
+  // Call the generateTreeView function with the root node
+  generateTreeView(rootNode, width / 2, height / 2, 0);
 </script>
 
 

@@ -88,7 +88,7 @@ nav
     gap: 32px;
 }
 
-.main-visual, .bird-view
+.main-visual, .bird-view, .tree-view
 {
     padding: 0rem;
 }
