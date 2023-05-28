@@ -21,7 +21,9 @@ class CSVParser(ParserService):
                 node_attributes = {}
                 for attribute in attributes.split(","):
                     key, value = attribute.split(":")
-                    node_attributes[key] = value.strip()
+                    if str(value).isnumeric():
+                        value = int(value)
+                    node_attributes[key] = value
                 nodes.append(Node(nodeName=name, attributes=node_attributes))
                 node_edges = []
                 for i in range(1, n + 1):
