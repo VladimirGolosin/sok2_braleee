@@ -282,152 +282,150 @@ function copyGraphToBirdView() {
 </script>
 
 <script>
-var width = "100%"; // Set the width of the SVG to match the parent div
-var height = 400; // Set the desired height of the SVG
-var nodeRadius = 20; // Set the radius of the nodes
-var rowSpacing = 20; // Set the desired row spacing value here
+  var width = "100%";
+  var height = 400;
+  var nodeRadius = 20;
+  var rowSpacing = 100;
+  var columnSpacing = 20;
 
-var svg = d3
-  .select("#tree-svg") // Updated selector to match the ID of the SVG element
-  .append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .call(d3.zoom().on("zoom", zoomed))
-  .append("g");
+  var svg = d3
+    .select("#tree-svg")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .call(d3.zoom().on("zoom", zoomed))
+    .append("g");
 
-var rootNode = nodes[0]; // Assuming the first node is the root node
-var visitedNodes = new Set(); // Set to keep track of visited nodes
+  var rootNode = nodes[0];
+  var visitedNodes = new Set();
+  var maxDepth = 0; // Track the maximum depth reached
+  var columnWidth = 200; // Define the columnWidth variable
 
-// Create a recursive function to generate the tree view
-function generateTreeView(node, x, y, depth) {
-  if (visitedNodes.has(node.id)) {
-    return; // If the node has already been visited, return to prevent infinite recursion
-  }
+  function generateTreeView(node, x, y, depth, parent) {
+    if (visitedNodes.has(node.id)) {
+      return;
+    }
 
-  visitedNodes.add(node.id); // Mark the node as visited
+    visitedNodes.add(node.id);
 
-  var columnWidth = 200; // Set the desired width of each column
-  var columnSpacing = 100; // Set the desired spacing between columns
-  var rowSpacing = 100; // Set the desired spacing between rows
+    var nodeGroup = svg.append("g").attr("class", "node-group");
 
-  // Draw the node
-  var nodeGroup = svg.append("g").attr("class", "node-group");
+    nodeGroup
+      .append("circle")
+      .attr("cx", x)
+      .attr("cy", y)
+      .attr("r", nodeRadius)
+      .style("fill", "#5DADE2");
 
-  nodeGroup
-    .append("circle")
-    .attr("cx", x)
-    .attr("cy", y)
-    .attr("r", nodeRadius)
-    .style("fill", "#5DADE2");
+    nodeGroup
+      .append("text")
+      .attr("x", x)
+      .attr("y", y + nodeRadius * 2)
+      .attr("text-anchor", "middle")
+      .attr("fill", "black")
+      .attr("font-size", "12px")
+      .text(node.name);
 
-  nodeGroup
-    .append("text")
-    .attr("x", x)
-    .attr("y", y + nodeRadius * 2)
-    .attr("text-anchor", "middle")
-    .attr("fill", "black")
-    .attr("font-size", "12px")
-    .text(node.name);
+    nodeGroup.on("click", function (event) {
+      if (event.defaultPrevented || event.ctrlKey) return;
 
-  // Add click event listener to expand/collapse nodes
-  nodeGroup.on("click", function (event) {
-    if (event.defaultPrevented || event.ctrlKey) return; // Ignore click if dragging or if Ctrl key is pressed
+      if (node.expanded) {
+        collapseNode(node, nodeGroup);
+      } else {
+        expandNode(node, x, y, depth + 1);
+      }
+    });
 
     if (node.expanded) {
-      collapseNode(node);
-    } else {
-      expandNode(node, x + columnWidth + columnSpacing, y, depth + 1);
-    }
-  });
+      var childNodes = getChildNodes(node);
+      var numChildNodes = childNodes.length;
 
-  // Draw the child nodes recursively if the current node is expanded
-  if (node.expanded) {
+      if (numChildNodes > 0 && !visitedNodes.has(childNodes[0].id)) {
+        var nextX = x + columnWidth + columnSpacing;
+        var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
+
+        for (var i = 0; i < numChildNodes; i++) {
+          var childNode = childNodes[i];
+          generateTreeView(childNode, nextX, nextY, depth + 1, node);
+          nextY += rowSpacing;
+        }
+
+        // Update the maxDepth if the current depth is greater
+        maxDepth = Math.max(maxDepth, depth + 1);
+      }
+    }
+  }
+
+  function getChildNodes(node) {
+    var childNodes = [];
+
+    for (var i = 0; i < nodes.length; i++) {
+      if (edgeMatrix[nodes.indexOf(node)][i]) {
+        childNodes.push(nodes[i]);
+      }
+    }
+
+    return childNodes;
+  }
+
+  function collapseNode(node, group) {
+    node.expanded = false;
+
+    // Remove the descendant nodes from the DOM
+    group.selectAll(".node-group").each(function (d) {
+      if (isDescendantOf(d, node)) {
+        d3.select(this).remove();
+      }
+    });
+  }
+
+  function expandNode(node, x, y, depth) {
+    node.expanded = true;
+
     var childNodes = getChildNodes(node);
     var numChildNodes = childNodes.length;
 
     if (numChildNodes > 0 && !visitedNodes.has(childNodes[0].id)) {
-      var nextX = x;
+      var nextX = x + columnWidth + columnSpacing;
       var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
 
       for (var i = 0; i < numChildNodes; i++) {
         var childNode = childNodes[i];
-        generateTreeView(childNode, nextX, nextY, depth + 1);
+        generateTreeView(childNode, nextX, nextY, depth + 1, node);
         nextY += rowSpacing;
       }
-    }
-  }
-}
 
-// Helper function to get the child nodes of a given node
-function getChildNodes(node) {
-  var childNodes = [];
-
-  for (var i = 0; i < nodes.length; i++) {
-    if (edgeMatrix[nodes.indexOf(node)][i] && nodes[i] !== node) {
-      childNodes.push(nodes[i]);
+      // Update the maxDepth if the current depth is greater
+      maxDepth = Math.max(maxDepth, depth + 1);
     }
   }
 
-  return childNodes;
-}
-
-
-// Function to collapse a node and its descendant nodes
-function collapseNode(node) {
-  node.expanded = false;
-
-  // Remove the descendant nodes from the DOM
-  svg.selectAll(".node-group").each(function (d) {
-    if (isDescendantOf(d, node)) {
-      d3.select(this).remove();
-    }
-  });
-}
-
-// Function to expand a node and show its descendant nodes
-function expandNode(node, x, y, depth) {
-  node.expanded = true;
-
-  // Draw the descendant nodes recursively
-  var childNodes = getChildNodes(node);
-  var numChildNodes = childNodes.length;
-
-  if (numChildNodes > 0 && !visitedNodes.has(childNodes[0].id)) {
-    var nextX = x;
-    var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
-
-    for (var i = 0; i < numChildNodes; i++) {
-      var childNode = childNodes[i];
-      generateTreeView(childNode, nextX, nextY, depth + 1);
-      nextY += rowSpacing;
-    }
-  }
-}
-
-// Helper function to check if a node is a descendant of another node
-function isDescendantOf(node, ancestor) {
-  if (node === ancestor) {
-    return true;
-  }
-
-  var parentNode = node.parentNode;
-  while (parentNode !== null) {
-    if (parentNode === ancestor) {
+  function isDescendantOf(node, ancestor) {
+    if (node === ancestor) {
       return true;
     }
-    parentNode = parentNode.parentNode;
+
+    var parentNode = node.parent;
+
+    while (parentNode !== null) {
+      if (parentNode === ancestor) {
+        return true;
+      }
+      parentNode = parentNode.parent;
+    }
+
+    return false;
   }
 
-  return false;
-}
+  function zoomed(event) {
+    svg.attr("transform", `translate(${event.transform.x}, 0) scale(${event.transform.k}, 1)`);
+  }
 
+  generateTreeView(rootNode, parseInt(width) / 2, height / 2, 0, null);
 
-function zoomed(event) {
-  svg.attr("transform", `translate(${event.transform.x}, 0) scale(${event.transform.k}, 1)`);
-}
-
-// Call the generateTreeView function with the root node
-generateTreeView(rootNode, parseInt(width) / 2, height / 2, 0);
+  // Adjust the width of the SVG based on the maxDepth reached
+  var svgWidth = (columnWidth + columnSpacing) * maxDepth + columnSpacing;
+  svg.attr("width", svgWidth);
 </script>
 
 
