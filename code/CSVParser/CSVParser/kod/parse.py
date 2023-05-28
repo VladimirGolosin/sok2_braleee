@@ -9,7 +9,7 @@ class CSVParser(ParserService):
         return "csv_parser"
 
     def parse(self, file):
-        f = open(file.name)
+        f = open("Files/" + file.name)
         n = int(f.readline().split(";")[0])
 
         nodes = []
