@@ -1,5 +1,5 @@
-from core.model.models import Node, Graph
-from core.services.parser import ParserService
+from Core.core.model.models import Node, Graph
+from Core.core.services.parser import ParserService
 class DummyParser(ParserService):
 
     def name(self):

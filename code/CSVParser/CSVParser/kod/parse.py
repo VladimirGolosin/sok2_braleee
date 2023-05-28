@@ -1,5 +1,5 @@
-from core.model.models import Node, Graph
-from core.services.parser import ParserService
+from Core.core.model.models import Node, Graph
+from Core.core.services.parser import ParserService
 class DummyParser(ParserService):
 
     def name(self):
@@ -9,23 +9,27 @@ class DummyParser(ParserService):
         return "csv_parser"
 
     def parse(self, file):
+        f = open(file.name)
+        n = f.readline().split(";")[0]
 
-        joza = Node(nodeName="joza", attributes={"bigfoot":True})
-        vlada = Node(nodeName="vlada", attributes={"debuje": True, "jede":"klipcinu"})
-        bibin = Node(nodeName="bibin", attributes={"vraca": "Konstantinopolj", "od": 1999})
-        vagner = Node(nodeName="vagner", attributes={"dani_borbe": 123})
-        stevan = Node(nodeName="stevan", attributes={"lokacija": "bulevar"})
-        kajman = Node(nodeName="kajman", attributes={"jede": "kfc"})
+        nodes = []
+        edge_matrix = []
+        for line in f:
+            id, name, edges, attributes = line.split(";")
+            node_attributes = {}
+            for attribute in attributes.split(","):
+                key, value = attribute.split(":")
+                node_attributes[key] = value
+            nodes.append(Node(nodeName=name, attributes=node_attributes))
+            node_edges = []
+            for i in range(i, n + 1):
+                if str(i) in edges.split(","):
+                    node_edges.append(True)
+                else:
+                    node_edges.append(False)
+            edge_matrix.append(node_edges)
+        f.close()
 
-        edge_matrix = [
-                       [False,True,True,True,False,False],
-                       [True,False,True,False,True,True],
-                       [True,True,False,False,True,False],
-                       [True,False,False,False,False,False],
-                       [False,True,True,False,False,False],
-                       [False,True,False,False,False,False]
-                       ]
-
-        graf = Graph(nodes=[joza,vlada,bibin,vagner,stevan,kajman], edge_matrix=edge_matrix)
+        graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
         graf.name = file.name
         return graf

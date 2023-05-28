@@ -6,6 +6,6 @@ setup(
     packages=find_packages(),
     install_requires=['tim3-core>=0.1'],
     entry_points = {'parsiranje':
-            ['dummy_parse=CSVParser.kod.parse:DummyParser']},
+            ['csv_parse=CSVParser.kod.parse:DummyParser']},
     zip_safe=True
 )
