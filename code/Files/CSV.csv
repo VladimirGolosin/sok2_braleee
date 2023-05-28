@@ -1,17 +1,17 @@
-16;Град;Повезаност;Атрибути
-1;Београд;14,15;Популација:2000000,Округ:Град Београд
-2;Нови Сад;4,7,8,11;Популација:400000,Округ:Јужнобачки
-3;Суботица;6,7,13;Популација:100000,Округ:Севернобачки
-4;Зрењанин;2,5,12,15,16;Популација:100000,Округ:Средњобанатски
-5;Кикинда;4,13,12;Популација:38000,Округ:Севернобанатски
-6;Сомбор;3,7,8;Популација:47000,Округ:Западнобачки
-7;Врбас;2,3,6,8,12;Популација:37000,Округ:Јужнобачки
-8;Бачка Паланка;2,6,7,9;Популација:48000,Округ:Јужнобачки
-9;Сремска Митровица;8,10;Популација:80000,Округ:Сремски
-10;Рума;9,11,14;Популација:30000,Округ:Сремски
-11;Инђија;2,10,14;Популација:26000,Округ:Сремски
-12;Бечеј;4,5,7,13;Популација:31000,Округ:Јужнобачки
-13;Сента;3,5,12;Популација:18000,Округ:Севернобанатски
-14;Стара Пазова;1,10,11;Популација:18000,Округ:Сремски
-15;Панчево;1,4,16;Популација:120000,Округ:Јужнобанатски
-16;Вршац;4,15;Популација:36000,Округ:Јужнобанатски
+16;Grad;Povezanost;Atributi;x
+1;Beograd;14,15;Populacija:2000000,Okrug:Grad Beograd;x
+2;Novi Sad;4,7,8,11;Populacija:400000,Okrug:Juznobacki;x
+3;Subotica;6,7,13;Populacija:100000,Okrug:Severnobacki;x
+4;Zrenjanin;2,5,12,15,16;Populacija:100000,Okrug:Srednjobanatski;x
+5;Kikinda;4,13,12;Populacija:38000,Okrug:Severnobanatski;x
+6;Sombor;3,7,8;Populacija:47000,Okrug:Zapadnobacki;x
+7;Vrbas;2,3,6,8,12;Populacija:37000,Okrug:Juznobacki;x
+8;Backa Palanka;2,6,7,9;Populacija:48000,Okrug:Juznobacki;x
+9;Sremska Mitrovica;8,10;Populacija:80000,Okrug:Sremski;x
+10;Ruma;9,11,14;Populacija:30000,Okrug:Sremski;x
+11;Indjija;2,10,14;Populacija:26000,Okrug:Sremski;x
+12;Becej;4,5,7,13;Populacija:31000,Okrug:Juznobacki;x
+13;Senta;3,5,12;Populacija:18000,Okrug:Severnobanatski;x
+14;Stara Pazova;1,10,11;Populacija:18000,Okrug:Sremski;x
+15;Pancevo;1,4,16;Populacija:120000,Okrug:Juznobanatski;x
+16;Vrsac;4,15;Populacija:36000,Okrug:Juznobanatski;x

@@ -15,7 +15,7 @@ class CoreConfig(AppConfig):
         self.plugini_ucitavanje = load_plugins("parsiranje")
         self.plugini_vizualizacija = load_plugins("vizualizacija")
         print("#### Plugini ####")
-        print("ucitavanje",len(self.plugini_ucitavanje))
+        print("ucitavanje", len(self.plugini_ucitavanje))
         print("visual", len(self.plugini_vizualizacija))
 
 def load_plugins(group_tag):
