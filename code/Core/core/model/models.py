@@ -28,11 +28,10 @@ class Node:
         self._attributes = value
 
     def __str__(self):
-        text = self.name
-        for i in self._attributes:
-            text += "\n"
-            text += text + i
-            text += ": " + self._attributes[i]
+        text = str(self.name)
+        if self.attributes:
+            for key, value in self.attributes.items():
+                text += "\n" + str(key) + ": " + str(value)
         return text
 
     def __eq__(self, other):
