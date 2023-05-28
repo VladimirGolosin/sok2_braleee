@@ -1,6 +1,6 @@
-from Core.core.model.models import Node, Graph
-from Core.core.services.parser import ParserService
-class DummyParser(ParserService):
+from core.model.models import Node, Graph
+from core.services.parser import ParserService
+class CSVParser(ParserService):
 
     def name(self):
         return "CSV parser"

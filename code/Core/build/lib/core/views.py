@@ -3,7 +3,7 @@ import uuid
 from django.apps.registry import apps
 from django.shortcuts import render
 from django.http import JsonResponse
-from core.model.models import Node, Graph
+from core.model.models import Graph
 
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
