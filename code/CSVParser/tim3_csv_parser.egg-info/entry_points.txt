@@ -1,2 +1,2 @@
 [parsiranje]
-csv_parse = CSVParser.kod.parse:DummyParser
+csv_parse = CSVParser.kod.parse:CSVParser
