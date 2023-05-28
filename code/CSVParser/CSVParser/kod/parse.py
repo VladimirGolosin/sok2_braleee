@@ -10,7 +10,7 @@ class DummyParser(ParserService):
 
     def parse(self, file):
         f = open(file.name)
-        n = f.readline().split(";")[0]
+        n = int(f.readline().split(";")[0])
 
         nodes = []
         edge_matrix = []
