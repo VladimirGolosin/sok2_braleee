@@ -284,8 +284,7 @@ function copyGraphToBirdView() {
 <script>
   const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
-  // Generating data variable from nodes and edgeMatrix
-  const treeNodes = [
+  /*const nodes = [
     { id: 0, name: "Node 0" },
     { id: 1, name: "Node 1" },
     { id: 2, name: "Node 2" },
@@ -293,21 +292,21 @@ function copyGraphToBirdView() {
     { id: 4, name: "Node 4" }
   ];
 
-  const treeEdgeMatrix = [
+  const edgeMatrix = [
     [0, 1, 1, 0, 0],
     [0, 0, 0, 1, 1],
     [0, 0, 0, 0, 1],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
-  ];
+  ];*/
 
   const treeData = { name: "Root", children: generateTree(0) };
 
   function generateTree(nodeId) {
     const children = [];
-    for (let i = 0; i < treeNodes.length; i++) {
-      if (treeEdgeMatrix[nodeId][i] === 1) {
-        const childNode = { ...treeNodes[i], children: generateTree(i) };
+    for (let i = 0; i < nodes.length; i++) {
+      if (edgeMatrix[nodeId][i] === 1) {
+        const childNode = { ...nodes[i], children: generateTree(i) };
         children.push(childNode);
       }
     }
@@ -442,11 +441,6 @@ function copyGraphToBirdView() {
 
   document.querySelector(".tree-view.border-frame").appendChild(treeSvg.node());
 </script>
-
-
-
-
-
 
 
 </div>
