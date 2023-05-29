@@ -284,11 +284,12 @@ function copyGraphToBirdView() {
 <script>
     //TREE VIEW GENERATION
 
+// TREE VIEW GENERATION
+
 var treeWidth = "100%";
 var treeHeight = 400;
-var treeNodeRadius = 20;
-var treeRowSpacing = 100;
-var treeColumnSpacing = 20;
+var treeNodeRadius = 10;
+var treeColumnSpacing = 10;
 
 var treeSvg = d3
   .select("#tree-svg")
@@ -301,7 +302,7 @@ var treeSvg = d3
 var treeRootNode = nodes[0];
 var treeVisitedNodes = new Set();
 var treeMaxDepth = 0; // Track the maximum depth reached
-var treeColumnWidth = 200; // Define the treeColumnWidth variable
+var treeColumnWidth = (parseInt(treeWidth) - treeColumnSpacing) / getMaxDepth(treeRootNode); // Calculate the column width dynamically
 
 function generateTreeView(node, x, y, depth, parent) {
   if (treeVisitedNodes.has(node.id)) {
@@ -321,9 +322,9 @@ function generateTreeView(node, x, y, depth, parent) {
 
   treeNodeGroup
     .append("text")
-    .attr("x", x)
-    .attr("y", y + treeNodeRadius * 2)
-    .attr("text-anchor", "middle")
+    .attr("x", x + treeNodeRadius * 1.5)
+    .attr("y", y)
+    .attr("text-anchor", "start")
     .attr("fill", "black")
     .attr("font-size", "12px")
     .text(node.name);
@@ -344,12 +345,12 @@ function generateTreeView(node, x, y, depth, parent) {
 
     if (treeNumChildNodes > 0 && !treeVisitedNodes.has(treeChildNodes[0].id)) {
       var nextX = x + treeColumnWidth + treeColumnSpacing;
-      var nextY = y - ((treeNumChildNodes - 1) * treeRowSpacing) / 2;
+      var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
 
       for (var i = 0; i < treeNumChildNodes; i++) {
         var treeChildNode = treeChildNodes[i];
         generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
-        nextY += treeRowSpacing;
+        nextY += treeNodeRadius * 2 + treeColumnSpacing;
       }
 
       // Update the treeMaxDepth if the current depth is greater
@@ -389,7 +390,7 @@ function treeExpandNode(node, x, y, depth) {
 
   if (treeNumChildNodes > 0) {
     var nextX = x + treeColumnWidth + treeColumnSpacing;
-    var nextY = y - ((treeNumChildNodes - 1) * treeRowSpacing) / 2;
+    var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
 
     for (var i = 0; i < treeNumChildNodes; i++) {
       var treeChildNode = treeChildNodes[i];
@@ -397,7 +398,7 @@ function treeExpandNode(node, x, y, depth) {
       if (!treeVisitedNodes.has(treeChildNode.id)) {
         generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
         treeVisitedNodes.add(treeChildNode.id);
-        nextY += treeRowSpacing;
+        nextY += treeNodeRadius * 2 + treeColumnSpacing;
       }
     }
 
@@ -432,6 +433,23 @@ generateTreeView(treeRootNode, parseInt(treeWidth) / 2, treeHeight / 2, 0, null)
 // Adjust the width of the SVG based on the treeMaxDepth reached
 var treeSvgWidth = (treeColumnWidth + treeColumnSpacing) * treeMaxDepth + treeColumnSpacing;
 treeSvg.attr("width", treeSvgWidth);
+
+function getMaxDepth(node) {
+  if (node.expanded) {
+    var childNodes = getTreeChildNodes(node);
+    var maxChildDepth = 0;
+
+    for (var i = 0; i < childNodes.length; i++) {
+      var childDepth = getMaxDepth(childNodes[i]);
+      maxChildDepth = Math.max(maxChildDepth, childDepth);
+    }
+
+    return maxChildDepth + 1;
+  }
+
+  return 1;
+}
+
 
 </script>
 
