@@ -280,7 +280,10 @@ function copyGraphToBirdView() {
 }
 
 </script>
+
 <script>
+    //TREE VIEW GENERATION
+
   var width = "100%";
   var height = 400;
   var nodeRadius = 20;
@@ -340,7 +343,7 @@ function copyGraphToBirdView() {
       var numChildNodes = childNodes.length;
 
       if (numChildNodes > 0 && !visitedNodes.has(childNodes[0].id)) {
-        var nextX = x + (columnWidth + columnSpacing) * (depth + 1);
+        var nextX = x + columnWidth + columnSpacing;
         var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
 
         for (var i = 0; i < numChildNodes; i++) {
@@ -379,25 +382,30 @@ function copyGraphToBirdView() {
   }
 
   function expandNode(node, x, y, depth) {
-    node.expanded = true;
+  node.expanded = true;
 
-    var childNodes = getChildNodes(node);
-    var numChildNodes = childNodes.length;
+  var childNodes = getChildNodes(node);
+  var numChildNodes = childNodes.length;
 
-    if (numChildNodes > 0 && !visitedNodes.has(childNodes[0].id)) {
-      var nextX = x + (columnWidth + columnSpacing) * (depth + 1);
-      var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
+  if (numChildNodes > 0) {
+    var nextX = x + columnWidth + columnSpacing;
+    var nextY = y - ((numChildNodes - 1) * rowSpacing) / 2;
 
-      for (var i = 0; i < numChildNodes; i++) {
-        var childNode = childNodes[i];
+    for (var i = 0; i < numChildNodes; i++) {
+      var childNode = childNodes[i];
+
+      if (!visitedNodes.has(childNode.id)) {
         generateTreeView(childNode, nextX, nextY, depth + 1, node);
+        visitedNodes.add(childNode.id);
         nextY += rowSpacing;
       }
-
-      // Update the maxDepth if the current depth is greater
-      maxDepth = Math.max(maxDepth, depth + 1);
     }
+
+    // Update the maxDepth if the current depth is greater
+    maxDepth = Math.max(maxDepth, depth + 1);
   }
+}
+
 
   function isDescendantOf(node, ancestor) {
     if (node === ancestor) {
@@ -426,7 +434,6 @@ function copyGraphToBirdView() {
   var svgWidth = (columnWidth + columnSpacing) * maxDepth + columnSpacing;
   svg.attr("width", svgWidth);
 </script>
-
 
 
 
