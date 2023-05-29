@@ -52,7 +52,7 @@
 
     <div class="upper">
         <div class="tree-view border-frame">
-            <svg id="tree-svg" width="100%" height="100%"></svg>
+
         </div>
 
         <div class="main-visual border-frame" id="main-div">
@@ -282,178 +282,168 @@ function copyGraphToBirdView() {
 </script>
 
 <script>
-  // TREE VIEW GENERATION
+  const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
-  var treeWidth = "100%";
-  var treeHeight = 400;
-  var treeNodeRadius = 10;
-  var treeColumnSpacing = 10;
+  // Generating data variable from nodes and edgeMatrix
+  const treeNodes = [
+    { id: 0, name: "Node 0" },
+    { id: 1, name: "Node 1" },
+    { id: 2, name: "Node 2" },
+    { id: 3, name: "Node 3" },
+    { id: 4, name: "Node 4" }
+  ];
 
-  var treeSvg = d3
-    .select("#tree-svg")
-    .append("svg")
-    .attr("width", treeWidth)
-    .attr("height", treeHeight)
-    .call(d3.zoom().on("zoom", treeZoomed))
-    .append("g");
+  const treeEdgeMatrix = [
+    [0, 1, 1, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+  ];
 
-  var treeRootNode = nodes[0];
-  var treeVisitedNodes = new Set();
-  var treeMaxDepth = 0; // Track the maximum depth reached
-  var treeColumnWidth = (parseInt(treeWidth) - treeColumnSpacing) / getMaxDepth(treeRootNode); // Calculate the column width dynamically
+  const treeData = { name: "Root", children: generateTree(0) };
 
-  function generateTreeView(node, x, y, depth, parent) {
-    if (treeVisitedNodes.has(node.id)) {
-      return;
-    }
-
-    treeVisitedNodes.add(node.id);
-
-    var treeNodeGroup = treeSvg.append("g").attr("class", "tree-node-group");
-
-    treeNodeGroup
-      .append("circle")
-      .attr("cx", x)
-      .attr("cy", y)
-      .attr("r", treeNodeRadius)
-      .style("fill", "#5DADE2");
-
-    treeNodeGroup
-      .append("text")
-      .attr("x", x + treeNodeRadius * 1.5)
-      .attr("y", y)
-      .attr("text-anchor", "start")
-      .attr("fill", "black")
-      .attr("font-size", "12px")
-      .text(node.name);
-
-    treeNodeGroup.on("click", function (event) {
-      if (event.defaultPrevented || event.ctrlKey) return;
-
-      if (node.expanded) {
-        treeCollapseNode(node, treeNodeGroup);
-      } else {
-        treeExpandNode(node, x, y, depth + 1);
-      }
-
-      event.stopPropagation(); // Prevent event bubbling
-    });
-
-    if (node.expanded) {
-      var treeChildNodes = getTreeChildNodes(node);
-      var treeNumChildNodes = treeChildNodes.length;
-
-      if (treeNumChildNodes > 0 && !treeVisitedNodes.has(treeChildNodes[0].id)) {
-        var nextX = x + treeColumnWidth + treeColumnSpacing;
-        var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
-
-        for (var i = 0; i < treeNumChildNodes; i++) {
-          var treeChildNode = treeChildNodes[i];
-          generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
-          nextY += treeNodeRadius * 2 + treeColumnSpacing;
-        }
-
-        // Update the treeMaxDepth if the current depth is greater
-        treeMaxDepth = Math.max(treeMaxDepth, depth + 1);
+  function generateTree(nodeId) {
+    const children = [];
+    for (let i = 0; i < treeNodes.length; i++) {
+      if (treeEdgeMatrix[nodeId][i] === 1) {
+        const childNode = { ...treeNodes[i], children: generateTree(i) };
+        children.push(childNode);
       }
     }
+    return children;
   }
 
-  function getTreeChildNodes(node) {
-    var treeChildNodes = [];
+  const treeMargin = { top: 10, right: 120, bottom: 10, left: 40 };
+  const treeWidth = 600;
+  const treeDx = 10;
+  const treeDy = treeWidth / 6;
 
-    for (var i = 0; i < nodes.length; i++) {
-      if (edgeMatrix[nodes.indexOf(node)][i]) {
-        treeChildNodes.push(nodes[i]);
-      }
-    }
+  const treeLayout = d3.tree().nodeSize([treeDx, treeDy]);
 
-    return treeChildNodes;
-  }
+  const treeRoot = d3.hierarchy(treeData);
 
-  function treeCollapseNode(node, group) {
-  node.expanded = false;
-
-  // Recursively collapse the descendant nodes
-  group.selectAll(".tree-node-group").each(function (d) {
-    if (isTreeDescendantOf(d, node)) {
-      treeCollapseNode(d, d3.select(this));
-    }
+  treeRoot.x0 = treeDy / 2;
+  treeRoot.y0 = 0;
+  treeRoot.descendants().forEach((d, i) => {
+    d.id = i;
+    d._children = d.children;
+    if (d.depth && d.data.name.length !== 7) d.children = null;
   });
 
-  // Remove the descendant nodes from the DOM
-  group.selectAll(".tree-node-group").remove();
-}
+  const treeSvg = d3.create("svg")
+    .attr("viewBox", [-treeMargin.left, -treeMargin.top, treeWidth, treeDx])
+    .style("font", "10px sans-serif")
+    .style("user-select", "none");
 
+  const treeGLink = treeSvg.append("g")
+    .attr("fill", "none")
+    .attr("stroke", "#555")
+    .attr("stroke-opacity", 0.4)
+    .attr("stroke-width", 1.5);
 
-  function treeExpandNode(node, x, y, depth) {
-    node.expanded = true;
+  const treeGNode = treeSvg.append("g")
+    .attr("cursor", "pointer")
+    .attr("pointer-events", "all");
 
-    var treeChildNodes = getTreeChildNodes(node);
-    var treeNumChildNodes = treeChildNodes.length;
+  function treeUpdate(source) {
+    const duration = d3.event && d3.event.altKey ? 2500 : 250;
+    const nodes = treeRoot.descendants().reverse();
+    const links = treeRoot.links();
 
-    if (treeNumChildNodes > 0) {
-      var nextX = x + treeColumnWidth + treeColumnSpacing;
-      var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
+    // Compute the new tree layout.
+    treeLayout(treeRoot);
 
-      for (var i = 0; i < treeNumChildNodes; i++) {
-        var treeChildNode = treeChildNodes[i];
+    let left = treeRoot;
+    let right = treeRoot;
+    treeRoot.eachBefore(node => {
+      if (node.x < left.x) left = node;
+      if (node.x > right.x) right = node;
+    });
 
-        if (!treeVisitedNodes.has(treeChildNode.id)) {
-          generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
-          treeVisitedNodes.add(treeChildNode.id);
-          nextY += treeNodeRadius * 2 + treeColumnSpacing;
-        }
-      }
+    const height = right.x - left.x + treeMargin.top + treeMargin.bottom;
 
-      // Update the treeMaxDepth if the current depth is greater
-      treeMaxDepth = Math.max(treeMaxDepth, depth + 1);
-    }
+    const transition = treeSvg.transition()
+      .duration(duration)
+      .attr("viewBox", [-treeMargin.left, left.x - treeMargin.top, treeWidth, height])
+      .tween("resize", window.ResizeObserver ? null : () => () => treeSvg.dispatch("toggle"));
+
+    // Update the nodes…
+    const node = treeGNode.selectAll("g")
+      .data(nodes, d => d.id);
+
+    // Enter any new nodes at the parent's previous position.
+    const nodeEnter = node.enter().append("g")
+      .attr("transform", d => `translate(${source.y0},${source.x0})`)
+      .attr("fill-opacity", 0)
+      .attr("stroke-opacity", 0)
+      .on("click", (event, d) => {
+        d.children = d.children ? null : d._children;
+        treeUpdate(d);
+      });
+
+    nodeEnter.append("circle")
+      .attr("r", 2.5)
+      .attr("fill", d => d._children ? "#555" : "#999")
+      .attr("stroke-width", 10);
+
+    nodeEnter.append("text")
+      .attr("dy", "0.31em")
+      .attr("x", d => d._children ? -6 : 6)
+      .attr("text-anchor", d => d._children ? "end" : "start")
+      .text(d => d.data.name)
+      .clone(true).lower()
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-width", 3)
+      .attr("stroke", "white");
+
+    // Transition nodes to their new position.
+    const nodeUpdate = node.merge(nodeEnter).transition(transition)
+      .attr("transform", d => `translate(${d.y},${d.x})`)
+      .attr("fill-opacity", 1)
+      .attr("stroke-opacity", 1);
+
+    // Transition exiting nodes to the parent's new position.
+    const nodeExit = node.exit().transition(transition).remove()
+      .attr("transform", d => `translate(${source.y},${source.x})`)
+      .attr("fill-opacity", 0)
+      .attr("stroke-opacity", 0);
+
+    // Update the links…
+    const link = treeGLink.selectAll("path")
+      .data(links, d => d.target.id);
+
+    // Enter any new links at the parent's previous position.
+    const linkEnter = link.enter().append("path")
+      .attr("d", d => {
+        const o = { x: source.x0, y: source.y0 };
+        return treeDiagonal({ source: o, target: o });
+      });
+
+    // Transition links to their new position.
+    link.merge(linkEnter).transition(transition)
+      .attr("d", treeDiagonal);
+
+    // Transition exiting nodes to the parent's new position.
+    link.exit().transition(transition).remove()
+      .attr("d", d => {
+        const o = { x: source.x, y: source.y };
+        return treeDiagonal({ source: o, target: o });
+      });
+
+    // Stash the old positions for transition.
+    treeRoot.eachBefore(d => {
+      d.x0 = d.x;
+      d.y0 = d.y;
+    });
   }
 
-  function isTreeDescendantOf(node, ancestor) {
-    if (node === ancestor) {
-      return true;
-    }
+  treeUpdate(treeRoot);
 
-    var parentNode = node.parent;
-
-    while (parentNode !== null) {
-      if (parentNode === ancestor) {
-        return true;
-      }
-      parentNode = parentNode.parent;
-    }
-
-    return false;
-  }
-
-  function treeZoomed(event) {
-    treeSvg.attr("transform", `translate(${event.transform.x}, 0) scale(${event.transform.k}, 1)`);
-  }
-
-  generateTreeView(treeRootNode, parseInt(treeWidth) / 2, treeHeight / 2, 0, null);
-
-  // Adjust the width of the SVG based on the treeMaxDepth reached
-  var treeSvgWidth = (treeColumnWidth + treeColumnSpacing) * treeMaxDepth + treeColumnSpacing;
-  treeSvg.attr("width", treeSvgWidth);
-
-  function getMaxDepth(node) {
-    if (node.expanded) {
-      var childNodes = getTreeChildNodes(node);
-      var maxChildDepth = 0;
-
-      for (var i = 0; i < childNodes.length; i++) {
-        var childDepth = getMaxDepth(childNodes[i]);
-        maxChildDepth = Math.max(maxChildDepth, childDepth);
-      }
-
-      return maxChildDepth + 1;
-    }
-
-    return 1;
-  }
+  document.querySelector(".tree-view.border-frame").appendChild(treeSvg.node());
 </script>
+
+
 
 
 
