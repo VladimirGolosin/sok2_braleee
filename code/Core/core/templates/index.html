@@ -284,34 +284,59 @@ function copyGraphToBirdView() {
 <script>
   const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
-  /*const nodes = [
-    { id: 0, name: "Node 0" },
-    { id: 1, name: "Node 1" },
-    { id: 2, name: "Node 2" },
-    { id: 3, name: "Node 3" },
-    { id: 4, name: "Node 4" }
+  /* const nodes = [
+    {
+      id: "817cee2a-9c17-42a6-91c5-487619af1414",
+      name: "joza"
+    },
+    {
+      id: "6b7d9ac3-1e57-4de7-a619-8249073fe96f",
+      name: "vlada"
+    },
+    {
+      id: "e914ebb4-4b37-489a-94ca-e921a693ac1c",
+      name: "bibin"
+    },
+    {
+      id: "89733ff6-2538-4f82-acc3-e6d02b0a2881",
+      name: "vagner"
+    },
+    {
+      id: "e34d7e58-338d-4889-961e-6354c8e5eb58",
+      name: "stevan"
+    },
+    {
+      id: "9934b0fd-ec0e-48f2-b030-423d73c73d46",
+      name: "kajman"
+    }
   ];
 
   const edgeMatrix = [
-    [0, 1, 1, 0, 0],
-    [0, 0, 0, 1, 1],
-    [0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-  ];*/
+    [false, true, true, false, false, false],
+    [false, false, false, true, true, false],
+    [false, false, false, false, true, false],
+    [false, false, false, false, false, false],
+    [false, false, false, false, false, false],
+    [false, false, false, false, false, false]
+  ]; */
 
+  console.log(nodes);
   const treeData = { name: "Root", children: generateTree(0) };
 
-  function generateTree(nodeId) {
-    const children = [];
-    for (let i = 0; i < nodes.length; i++) {
-      if (edgeMatrix[nodeId][i] === 1) {
-        const childNode = { ...nodes[i], children: generateTree(i) };
-        children.push(childNode);
-      }
+  function generateTree(nodeId, visited = []) {
+  const children = [];
+  visited.push(nodeId); // Mark the current node as visited
+
+  for (let i = 0; i < nodes.length; i++) {
+    if (edgeMatrix[nodeId][i] && !visited.includes(i)) {
+      const childNode = { ...nodes[i], children: generateTree(i, visited) };
+      children.push(childNode);
     }
-    return children;
   }
+
+  return children;
+}
+
 
   const treeMargin = { top: 10, right: 120, bottom: 10, left: 40 };
   const treeWidth = 600;
@@ -441,6 +466,7 @@ function copyGraphToBirdView() {
 
   document.querySelector(".tree-view.border-frame").appendChild(treeSvg.node());
 </script>
+
 
 
 </div>
