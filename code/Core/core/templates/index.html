@@ -282,176 +282,180 @@ function copyGraphToBirdView() {
 </script>
 
 <script>
-    //TREE VIEW GENERATION
+  // TREE VIEW GENERATION
 
-// TREE VIEW GENERATION
+  var treeWidth = "100%";
+  var treeHeight = 400;
+  var treeNodeRadius = 10;
+  var treeColumnSpacing = 10;
 
-var treeWidth = "100%";
-var treeHeight = 400;
-var treeNodeRadius = 10;
-var treeColumnSpacing = 10;
+  var treeSvg = d3
+    .select("#tree-svg")
+    .append("svg")
+    .attr("width", treeWidth)
+    .attr("height", treeHeight)
+    .call(d3.zoom().on("zoom", treeZoomed))
+    .append("g");
 
-var treeSvg = d3
-  .select("#tree-svg")
-  .append("svg")
-  .attr("width", treeWidth)
-  .attr("height", treeHeight)
-  .call(d3.zoom().on("zoom", treeZoomed))
-  .append("g");
+  var treeRootNode = nodes[0];
+  var treeVisitedNodes = new Set();
+  var treeMaxDepth = 0; // Track the maximum depth reached
+  var treeColumnWidth = (parseInt(treeWidth) - treeColumnSpacing) / getMaxDepth(treeRootNode); // Calculate the column width dynamically
 
-var treeRootNode = nodes[0];
-var treeVisitedNodes = new Set();
-var treeMaxDepth = 0; // Track the maximum depth reached
-var treeColumnWidth = (parseInt(treeWidth) - treeColumnSpacing) / getMaxDepth(treeRootNode); // Calculate the column width dynamically
+  function generateTreeView(node, x, y, depth, parent) {
+    if (treeVisitedNodes.has(node.id)) {
+      return;
+    }
 
-function generateTreeView(node, x, y, depth, parent) {
-  if (treeVisitedNodes.has(node.id)) {
-    return;
-  }
+    treeVisitedNodes.add(node.id);
 
-  treeVisitedNodes.add(node.id);
+    var treeNodeGroup = treeSvg.append("g").attr("class", "tree-node-group");
 
-  var treeNodeGroup = treeSvg.append("g").attr("class", "tree-node-group");
+    treeNodeGroup
+      .append("circle")
+      .attr("cx", x)
+      .attr("cy", y)
+      .attr("r", treeNodeRadius)
+      .style("fill", "#5DADE2");
 
-  treeNodeGroup
-    .append("circle")
-    .attr("cx", x)
-    .attr("cy", y)
-    .attr("r", treeNodeRadius)
-    .style("fill", "#5DADE2");
+    treeNodeGroup
+      .append("text")
+      .attr("x", x + treeNodeRadius * 1.5)
+      .attr("y", y)
+      .attr("text-anchor", "start")
+      .attr("fill", "black")
+      .attr("font-size", "12px")
+      .text(node.name);
 
-  treeNodeGroup
-    .append("text")
-    .attr("x", x + treeNodeRadius * 1.5)
-    .attr("y", y)
-    .attr("text-anchor", "start")
-    .attr("fill", "black")
-    .attr("font-size", "12px")
-    .text(node.name);
+    treeNodeGroup.on("click", function (event) {
+      if (event.defaultPrevented || event.ctrlKey) return;
 
-  treeNodeGroup.on("click", function (event) {
-    if (event.defaultPrevented || event.ctrlKey) return;
+      if (node.expanded) {
+        treeCollapseNode(node, treeNodeGroup);
+      } else {
+        treeExpandNode(node, x, y, depth + 1);
+      }
+
+      event.stopPropagation(); // Prevent event bubbling
+    });
 
     if (node.expanded) {
-      treeCollapseNode(node, treeNodeGroup);
-    } else {
-      treeExpandNode(node, x, y, depth + 1);
+      var treeChildNodes = getTreeChildNodes(node);
+      var treeNumChildNodes = treeChildNodes.length;
+
+      if (treeNumChildNodes > 0 && !treeVisitedNodes.has(treeChildNodes[0].id)) {
+        var nextX = x + treeColumnWidth + treeColumnSpacing;
+        var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
+
+        for (var i = 0; i < treeNumChildNodes; i++) {
+          var treeChildNode = treeChildNodes[i];
+          generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
+          nextY += treeNodeRadius * 2 + treeColumnSpacing;
+        }
+
+        // Update the treeMaxDepth if the current depth is greater
+        treeMaxDepth = Math.max(treeMaxDepth, depth + 1);
+      }
+    }
+  }
+
+  function getTreeChildNodes(node) {
+    var treeChildNodes = [];
+
+    for (var i = 0; i < nodes.length; i++) {
+      if (edgeMatrix[nodes.indexOf(node)][i]) {
+        treeChildNodes.push(nodes[i]);
+      }
+    }
+
+    return treeChildNodes;
+  }
+
+  function treeCollapseNode(node, group) {
+  node.expanded = false;
+
+  // Recursively collapse the descendant nodes
+  group.selectAll(".tree-node-group").each(function (d) {
+    if (isTreeDescendantOf(d, node)) {
+      treeCollapseNode(d, d3.select(this));
     }
   });
 
-  if (node.expanded) {
+  // Remove the descendant nodes from the DOM
+  group.selectAll(".tree-node-group").remove();
+}
+
+
+  function treeExpandNode(node, x, y, depth) {
+    node.expanded = true;
+
     var treeChildNodes = getTreeChildNodes(node);
     var treeNumChildNodes = treeChildNodes.length;
 
-    if (treeNumChildNodes > 0 && !treeVisitedNodes.has(treeChildNodes[0].id)) {
+    if (treeNumChildNodes > 0) {
       var nextX = x + treeColumnWidth + treeColumnSpacing;
       var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
 
       for (var i = 0; i < treeNumChildNodes; i++) {
         var treeChildNode = treeChildNodes[i];
-        generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
-        nextY += treeNodeRadius * 2 + treeColumnSpacing;
+
+        if (!treeVisitedNodes.has(treeChildNode.id)) {
+          generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
+          treeVisitedNodes.add(treeChildNode.id);
+          nextY += treeNodeRadius * 2 + treeColumnSpacing;
+        }
       }
 
       // Update the treeMaxDepth if the current depth is greater
       treeMaxDepth = Math.max(treeMaxDepth, depth + 1);
     }
   }
-}
 
-function getTreeChildNodes(node) {
-  var treeChildNodes = [];
-
-  for (var i = 0; i < nodes.length; i++) {
-    if (edgeMatrix[nodes.indexOf(node)][i]) {
-      treeChildNodes.push(nodes[i]);
-    }
-  }
-
-  return treeChildNodes;
-}
-
-function treeCollapseNode(node, group) {
-  node.expanded = false;
-
-  // Remove the descendant nodes from the DOM
-  group.selectAll(".tree-node-group").each(function (d) {
-    if (isTreeDescendantOf(d, node)) {
-      d3.select(this).remove();
-    }
-  });
-}
-
-function treeExpandNode(node, x, y, depth) {
-  node.expanded = true;
-
-  var treeChildNodes = getTreeChildNodes(node);
-  var treeNumChildNodes = treeChildNodes.length;
-
-  if (treeNumChildNodes > 0) {
-    var nextX = x + treeColumnWidth + treeColumnSpacing;
-    var nextY = y - ((treeNumChildNodes - 1) * (treeNodeRadius * 2 + treeColumnSpacing)) / 2;
-
-    for (var i = 0; i < treeNumChildNodes; i++) {
-      var treeChildNode = treeChildNodes[i];
-
-      if (!treeVisitedNodes.has(treeChildNode.id)) {
-        generateTreeView(treeChildNode, nextX, nextY, depth + 1, node);
-        treeVisitedNodes.add(treeChildNode.id);
-        nextY += treeNodeRadius * 2 + treeColumnSpacing;
-      }
-    }
-
-    // Update the treeMaxDepth if the current depth is greater
-    treeMaxDepth = Math.max(treeMaxDepth, depth + 1);
-  }
-}
-
-function isTreeDescendantOf(node, ancestor) {
-  if (node === ancestor) {
-    return true;
-  }
-
-  var parentNode = node.parent;
-
-  while (parentNode !== null) {
-    if (parentNode === ancestor) {
+  function isTreeDescendantOf(node, ancestor) {
+    if (node === ancestor) {
       return true;
     }
-    parentNode = parentNode.parent;
-  }
 
-  return false;
-}
+    var parentNode = node.parent;
 
-function treeZoomed(event) {
-  treeSvg.attr("transform", `translate(${event.transform.x}, 0) scale(${event.transform.k}, 1)`);
-}
-
-generateTreeView(treeRootNode, parseInt(treeWidth) / 2, treeHeight / 2, 0, null);
-
-// Adjust the width of the SVG based on the treeMaxDepth reached
-var treeSvgWidth = (treeColumnWidth + treeColumnSpacing) * treeMaxDepth + treeColumnSpacing;
-treeSvg.attr("width", treeSvgWidth);
-
-function getMaxDepth(node) {
-  if (node.expanded) {
-    var childNodes = getTreeChildNodes(node);
-    var maxChildDepth = 0;
-
-    for (var i = 0; i < childNodes.length; i++) {
-      var childDepth = getMaxDepth(childNodes[i]);
-      maxChildDepth = Math.max(maxChildDepth, childDepth);
+    while (parentNode !== null) {
+      if (parentNode === ancestor) {
+        return true;
+      }
+      parentNode = parentNode.parent;
     }
 
-    return maxChildDepth + 1;
+    return false;
   }
 
-  return 1;
-}
+  function treeZoomed(event) {
+    treeSvg.attr("transform", `translate(${event.transform.x}, 0) scale(${event.transform.k}, 1)`);
+  }
 
+  generateTreeView(treeRootNode, parseInt(treeWidth) / 2, treeHeight / 2, 0, null);
 
+  // Adjust the width of the SVG based on the treeMaxDepth reached
+  var treeSvgWidth = (treeColumnWidth + treeColumnSpacing) * treeMaxDepth + treeColumnSpacing;
+  treeSvg.attr("width", treeSvgWidth);
+
+  function getMaxDepth(node) {
+    if (node.expanded) {
+      var childNodes = getTreeChildNodes(node);
+      var maxChildDepth = 0;
+
+      for (var i = 0; i < childNodes.length; i++) {
+        var childDepth = getMaxDepth(childNodes[i]);
+        maxChildDepth = Math.max(maxChildDepth, childDepth);
+      }
+
+      return maxChildDepth + 1;
+    }
+
+    return 1;
+  }
 </script>
+
+
 
 
 
