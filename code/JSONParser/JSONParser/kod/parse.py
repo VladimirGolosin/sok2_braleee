@@ -1,12 +1,12 @@
 from core.model.models import Node, Graph
 from core.services.parser import ParserService
-class CSVParser(ParserService):
+class JSONParser(ParserService):
 
     def name(self):
-        return "CSV parser"
+        return "JSON parser"
 
     def identifier(self):
-        return "csv_parser"
+        return "json_parser"
 
     def parse(self, file):
         file.open()
@@ -14,10 +14,10 @@ class CSVParser(ParserService):
 
         nodes = []
         edge_matrix = []
-        skip = True
         for line in file:
             id, name, edges, attributes, x = str(line)[2:].split(";")
-            if skip is False:
+            print(name)
+            if name != "Grad":
                 node_attributes = {}
                 for attribute in attributes.split(","):
                     key, value = attribute.split(":")
@@ -32,8 +32,6 @@ class CSVParser(ParserService):
                     else:
                         node_edges.append(False)
                 edge_matrix.append(node_edges)
-            else:
-                skip = False
         file.close()
 
         graf = Graph(nodes=nodes, edge_matrix=edge_matrix)

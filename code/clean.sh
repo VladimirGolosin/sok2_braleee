@@ -15,6 +15,7 @@ remove_eggs() {
 remove_eggs Core
 remove_eggs TestParser
 remove_eggs CSVParser
+remove_eggs JSONParser
 remove_eggs VlafaParser
 remove_eggs SimpleVisualizer
 
