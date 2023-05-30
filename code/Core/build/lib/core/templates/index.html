@@ -282,12 +282,12 @@ function copyGraphToBirdView() {
 </script>
 
 <script>
-  // Define your nodes and edge matrix here
+  //TREE VIEW SCRIPT
 
   const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
   const rootNode = nodes[0]; // Get the first node from the nodes list
-  const treeData = { name: rootNode.name, children: generateTree(0) };
+  const treeData = { id: rootNode.id, name: rootNode.name, children: generateTree(0) };
 
   function generateTree(nodeId, visited = []) {
     const children = [];
@@ -295,7 +295,7 @@ function copyGraphToBirdView() {
 
     for (let i = 0; i < nodes.length; i++) {
       if (edgeMatrix[nodeId][i] && !visited.includes(i)) {
-        const childNode = { ...nodes[i], children: generateTree(i, visited.slice()) };
+        const childNode = { id: nodes[i].id, name: nodes[i].name, children: generateTree(i, visited.slice()) };
         children.push(childNode);
       }
     }
@@ -315,9 +315,9 @@ function copyGraphToBirdView() {
   treeRoot.x0 = treeDy / 2;
   treeRoot.y0 = 0;
   treeRoot.descendants().forEach((d, i) => {
-    d.id = i;
+    d.index = i; // Assign an index to each node
     d._children = d.children;
-    if (d.data.name !== "aaaa") { // Collapse all nodes except "Joza"
+    if (d.data.name !== "aaaa") {
       d.children = null;
     }
   });
@@ -361,17 +361,23 @@ function copyGraphToBirdView() {
 
     // Update the nodes...
     const node = treeGNode.selectAll("g")
-      .data(nodes, d => d.id);
+      .data(nodes, d => d.index);
 
     // Enter any new nodes at the parent's previous position.
-    const nodeEnter = node.enter().append("g")
+    const nodeEnter = node.enter().append("g").attr("class", "tree-node")
       .attr("transform", d => `translate(${source.y0},${source.x0})`)
       .attr("fill-opacity", 0)
       .attr("stroke-opacity", 0)
       .on("click", (event, d) => {
-        d.children = d.children ? null : d._children;
-        treeUpdate(d);
-      });
+    // Remove the red color from all nodes
+    d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
+
+    // Apply the red color to the clicked node
+    d3.select(event.currentTarget).attr("fill", "red");
+
+    d.children = d.children ? null : d._children;
+    treeUpdate(d);
+  });
 
     nodeEnter.append("circle")
       .attr("r", 2.5)
@@ -402,7 +408,7 @@ function copyGraphToBirdView() {
 
     // Update the links...
     const link = treeGLink.selectAll("path")
-      .data(links, d => d.target.id);
+      .data(links, d => d.target.index);
 
     // Enter any new links at the parent's previous position.
     const linkEnter = link.enter().append("path")
