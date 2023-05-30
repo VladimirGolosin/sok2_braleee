@@ -89,7 +89,7 @@
 
   node.on("click", handleNodeClick); // Add this line
 
-   function handleNodeClick(event, d) {
+   function handleNodeClick(event, d, targetElement) {
     // Reset node colors to blue
     node.selectAll("circle").style("fill", "#5DADE2");
 
@@ -106,7 +106,7 @@
     });
 
     // Color the clicked node red
-    d3.select(this).select("circle").style("fill", "red");
+    d3.select(targetElement).style("fill", "red");
 
     // Call the copyGraphToBirdView function
     copyGraphToBirdView();

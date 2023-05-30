@@ -370,6 +370,7 @@ function copyGraphToBirdView() {
       .attr("stroke-opacity", 0)
       .on("click", (event, d) => {
     // Remove the red color from all nodes
+          
     d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
 
     // Apply the red color to the clicked node
