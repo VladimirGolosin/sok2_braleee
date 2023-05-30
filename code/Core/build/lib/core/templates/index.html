@@ -369,16 +369,19 @@ function copyGraphToBirdView() {
       .attr("fill-opacity", 0)
       .attr("stroke-opacity", 0)
       .on("click", (event, d) => {
-    // Remove the red color from all nodes
-          
-    d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
+        // Print the ID of the clicked node to the console
+        console.log("Clicked node ID:", d.data.id);
 
-    // Apply the red color to the clicked node
-    d3.select(event.currentTarget).attr("fill", "red");
+        // Remove the red color from all nodes
+        d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
 
-    d.children = d.children ? null : d._children;
-    treeUpdate(d);
-  });
+        // Apply the red color to the clicked node
+        d3.select(event.currentTarget).attr("fill", "red");
+
+        d.children = d.children ? null : d._children;
+        treeUpdate(d);
+      });
+
 
     nodeEnter.append("circle")
       .attr("r", 2.5)
