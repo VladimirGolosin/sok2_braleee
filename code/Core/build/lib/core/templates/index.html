@@ -304,7 +304,7 @@ function copyGraphToBirdView() {
   }
 
   const treeMargin = { top: 10, right: 120, bottom: 10, left: 40 };
-  const treeWidth = 600;
+  const treeWidth = 450;
   const treeDx = 10;
   const treeDy = treeWidth / 6;
 
@@ -317,7 +317,7 @@ function copyGraphToBirdView() {
   treeRoot.descendants().forEach((d, i) => {
     d.id = i;
     d._children = d.children;
-    if (d.data.name !== "Joza") { // Collapse all nodes except "Joza"
+    if (d.data.name !== "aaaa") { // Collapse all nodes except "Joza"
       d.children = null;
     }
   });
