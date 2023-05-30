@@ -284,9 +284,12 @@ function copyGraphToBirdView() {
 <script>
   // Define your nodes and edge matrix here
 
+  console.log(nodes);
+  console.log(edgeMatrix);
+
   const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
-  const rootNode = nodes[0]; // Get the first node from the nodes list
+  const rootNode = { id: "root", name: "root", children: [] }; // Create a root node
   const treeData = { name: rootNode.name, children: generateTree(0) };
 
   function generateTree(nodeId, visited = []) {
@@ -303,6 +306,13 @@ function copyGraphToBirdView() {
     return children.length ? children : null; // Return null if there are no children
   }
 
+  // Connect the root node to isolated subgraphs
+  for (let i = 0; i < nodes.length; i++) {
+    if (!treeData.children.some(child => child.index === i)) {
+      rootNode.children.push(nodes[i]);
+    }
+  }
+
   const treeMargin = { top: 10, right: 120, bottom: 10, left: 40 };
   const treeWidth = 600;
   const treeDx = 10;
@@ -317,7 +327,7 @@ function copyGraphToBirdView() {
   treeRoot.descendants().forEach((d, i) => {
     d.id = i;
     d._children = d.children;
-    if (d.data.name !== "Joza") { // Collapse all nodes except "Joza"
+    if (d.data.name !== "joza") { // Collapse all nodes except "joza"
       d.children = null;
     }
   });
