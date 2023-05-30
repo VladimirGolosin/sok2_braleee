@@ -284,8 +284,6 @@ function copyGraphToBirdView() {
 <script>
   // Define your nodes and edge matrix here
 
-  console.log(nodes)
-  console.log(edgeMatrix)
   const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
   const rootNode = nodes[0]; // Get the first node from the nodes list
@@ -435,6 +433,7 @@ function copyGraphToBirdView() {
 
   document.querySelector(".tree-view.border-frame").appendChild(treeSvg.node());
 </script>
+
 
 
 </div>
