@@ -282,7 +282,7 @@ function copyGraphToBirdView() {
 </script>
 
 <script>
-  //TREE VIEW SCRIPT
+  // TREE VIEW SCRIPT
 
   const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
@@ -364,23 +364,37 @@ function copyGraphToBirdView() {
       .data(nodes, d => d.index);
 
     // Enter any new nodes at the parent's previous position.
-    const nodeEnter = node.enter().append("g").attr("class", "tree-node")
-      .attr("transform", d => `translate(${source.y0},${source.x0})`)
-      .attr("fill-opacity", 0)
-      .attr("stroke-opacity", 0)
-      .on("click", (event, d) => {
-        // Print the ID of the clicked node to the console
-        console.log("Clicked node ID:", d.data.id);
+const nodeEnter = node.enter().append("g").attr("class", "tree-node")
+  .attr("transform", d => `translate(${source.y0},${source.x0})`)
+  .attr("fill-opacity", 0)
+  .attr("stroke-opacity", 0)
+  .on("click", (event, d) => {
+    // Print the ID of the clicked node to the console
+    console.log("Clicked node ID:", d.data.id);
 
-        // Remove the red color from all nodes
-        d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
+    // Remove the red color from all nodes
+    d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
 
-        // Apply the red color to the clicked node
-        d3.select(event.currentTarget).attr("fill", "red");
+    // Apply the red color to the clicked node
+    d3.select(event.currentTarget).attr("fill", "red");
 
-        d.children = d.children ? null : d._children;
-        treeUpdate(d);
-      });
+    d.children = d.children ? null : d._children;
+    treeUpdate(d);
+
+    // Find the corresponding node in the main-visual
+    const targetNodeId = d.data.id;
+    const targetNode = d3.selectAll("#visualization .node")
+      .filter(node => node.id === targetNodeId);
+
+    // Trigger the click event of the corresponding node in the main-visual
+    const clickHandler = targetNode.on("click");
+    if (clickHandler) {
+      clickHandler(targetNode.node(), targetNode.datum());
+    }
+  });
+
+
+
 
 
     nodeEnter.append("circle")
