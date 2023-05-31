@@ -1,0 +1,48 @@
+{
+	"n": 5,
+	"root": {
+		"name": "Linux",
+		"attributes": {
+			"YoC": 1991,
+			"Symbol": "Picture"
+		},
+		"children": [
+			{
+				"name": "Red Hat",
+				"attributes": {
+					"YoC": 1995,
+					"Symbol": "Picture"
+				},
+				"children": [
+				]
+			},
+			{
+				"name": "SLS",
+				"attributes": {
+					"YoC": 1992,
+					"Symbol": "Text"
+				},
+				"children": [
+				]
+			},
+			{
+				"name": "Debian",
+				"attributes": {
+					"YoC": 1993,
+					"Symbol": "Logo"
+				},
+				"children": [
+				]
+			},
+			{
+				"name": "Yggdrasil",
+				"attributes": {
+					"YoC": 1992,
+					"Symbol": "Text"
+				},
+				"children": [
+				]
+			}
+		]
+	}
+}

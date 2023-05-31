@@ -1,5 +1,6 @@
 from core.model.models import Node, Graph
 from core.services.parser import ParserService
+import json
 class JSONParser(ParserService):
 
     def name(self):
@@ -10,28 +11,30 @@ class JSONParser(ParserService):
 
     def parse(self, file):
         file.open()
-        n = int(str(file.readline()).split(";")[0][2:])
+        data = json.load(file)
 
+        n = data["n"]
         nodes = []
+        node_children = []
         edge_matrix = []
-        for line in file:
-            id, name, edges, attributes, x = str(line)[2:].split(";")
-            print(name)
-            if name != "Grad":
-                node_attributes = {}
-                for attribute in attributes.split(","):
-                    key, value = attribute.split(":")
-                    if str(value).isnumeric():
-                        value = int(value)
-                    node_attributes[key] = value
-                nodes.append(Node(nodeName=name, attributes=node_attributes))
-                node_edges = []
-                for i in range(1, n + 1):
-                    if str(i) in edges.split(","):
-                        node_edges.append(True)
-                    else:
-                        node_edges.append(False)
-                edge_matrix.append(node_edges)
+        for i in range(n):
+            edge_matrix.append([])
+            for j in range(n):
+                edge_matrix[i].append(False)
+        root = data["root"]
+        nodes.append(Node(nodeName=root["name"], attributes=root["attributes"]))
+        node_children.append(root["children"])
+
+        i = 0
+        while i < len(nodes):
+            children = node_children[i]
+            for child in children:
+                nodes.append(Node(nodeName=child["name"], attributes=child["attributes"]))
+                node_children.append(child["children"])
+                edge_matrix[i][len(nodes) - 1] = True
+                edge_matrix[len(nodes) - 1][i] = True
+            i += 1
+
         file.close()
 
         graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
