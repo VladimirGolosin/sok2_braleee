@@ -1,2 +1,0 @@
-[parsiranje]
-dummy_parse = testParser.kod.parse:DummyParser
