@@ -1,2 +1,0 @@
-[parsiranje]
-csv_parse = CSVParser.kod.parse:CSVParser
