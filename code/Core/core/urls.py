@@ -10,6 +10,4 @@ urlpatterns = [
     path('search/<str:search_text>/', views.search, name='search'),
     path('filter/<str:filter_text>/', views.filter, name='filter'),
 
-
-
 ]

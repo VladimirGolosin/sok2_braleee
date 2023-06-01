@@ -6,12 +6,14 @@ from django.http import JsonResponse
 from core.model.models import Node, Graph
 from datetime import datetime
 
+
 def index(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
     viz = apps.get_app_config('core').plugini_vizualizacija
     ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
-    context = {"parsers": parseri,"visualizators":viz, "loaded_graphs":ucitani_grafovi}
+    context = {"parsers": parseri, "visualizators": viz, "loaded_graphs": ucitani_grafovi}
     return render(request, "index.html", context=context)
+
 
 def parse_and_visualize(request):
     parseri = apps.get_app_config('core').plugini_ucitavanje
@@ -54,7 +56,7 @@ def parse_and_visualize(request):
 
         if visualizer is not None:
             trenutni_iscrtan_graf = visualizer.visualize(new_graph)
-            #obavestiti core pošto ovo nije lista
+            # obavestiti core pošto ovo nije lista
             apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
             apps.get_app_config('core').trenutni_graf = new_graph
 
@@ -63,7 +65,7 @@ def parse_and_visualize(request):
 
     else:
         print("pozvan je get")
-    
+
     context = {
         "parsers": parseri,
         "visualizators": viz,
@@ -82,7 +84,6 @@ def load_and_visualize(request):
     if request.method == 'POST':
         selected_graph = request.POST.get('graph')
         selected_visualizer = request.POST.get('visualization')
-
 
         graph_to_display = None
         for g in ucitani_grafovi:
@@ -117,7 +118,6 @@ def load_and_visualize(request):
         "rendered_graph": trenutni_iscrtan_graf
     }
     return render(request, "index.html", context=context)
-
 
 
 def get_data(request, node_id):
@@ -167,8 +167,6 @@ def search_graph(graph, search_text):
     return new_graph
 
 
-
-
 def search(request, search_text):
     viz = apps.get_app_config('core').trenutni_vizualizator
     pretrazen_graf = search_graph(apps.get_app_config('core').trenutni_graf, search_text)
@@ -185,6 +183,7 @@ def search(request, search_text):
         "search_filter_current_text": search_text,
     }
     return render(request, "index.html", context=context)
+
 
 def filter_graph(graph, filter_text):
     new_graph = Graph(nodes=[], name=graph.name)
@@ -218,6 +217,7 @@ def filter_graph(graph, filter_text):
 
 
 from datetime import datetime
+
 
 def compare_values(value, operator, filter_value):
     # Handle boolean comparisons
@@ -263,7 +263,6 @@ def compare_values(value, operator, filter_value):
         return value != filter_value
     else:
         return False
-
 
 
 def filter(request, filter_text):
