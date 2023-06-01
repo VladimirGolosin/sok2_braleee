@@ -1,0 +1,10 @@
+setup.py
+SimpleVisualizer/__init__.py
+SimpleVisualizer/simplevisualizer.py
+SimpleVisualizer/templates/visualizer.html
+tim3_simple_visualizer.egg-info/PKG-INFO
+tim3_simple_visualizer.egg-info/SOURCES.txt
+tim3_simple_visualizer.egg-info/dependency_links.txt
+tim3_simple_visualizer.egg-info/entry_points.txt
+tim3_simple_visualizer.egg-info/not-zip-safe
+tim3_simple_visualizer.egg-info/top_level.txt

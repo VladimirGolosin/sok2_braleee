@@ -66,12 +66,16 @@
     .style("stroke-width", 2); // Set the stroke width
 
   var node = svg
-    .selectAll(".node")
-    .data(nodes)
-    .enter()
-    .append("g")
-    .attr("class", "node")
-    .call(d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded));
+  .selectAll(".node")
+  .data(nodes)
+  .enter()
+  .append("g")
+  .attr("class", "node")
+  .call(d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded))
+  .each(function(d) {
+    // Save "this" as "that" for each node
+    d.that = this;
+  });
 
   node
     .append("circle")
@@ -106,7 +110,7 @@
   });
 
   // Color the clicked node red
-  d3.select(event.currentTarget).select("circle").style("fill", "red");
+  d3.select(d.that).select("circle").style("fill", "red");
 
   // Call the copyGraphToBirdView function
   copyGraphToBirdView();
