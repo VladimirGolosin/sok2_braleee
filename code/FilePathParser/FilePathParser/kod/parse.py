@@ -15,62 +15,49 @@ class FilePathParser(ParserService):
         path = file.readline().decode()
         file.close()
 
-        nodes = []
-        edge_matrix = []
         n = 0
         for _, dirs, files in os.walk(path):
             n += len(dirs)
             n += len(files)
-        n+=1
-        directory_node = Node(nodeName=path, attributes={
-            "Type": "Directory",
-            "Size (bytes)": os.path.getsize(path),
-            "Last modified" : datetime.fromtimestamp(os.path.getmtime(curr_path)).strftime(
-            '%Y-%m-%d %H:%M:%S'),
-            "Date created" : datetime.fromtimestamp(os.path.getctime(curr_path)).strftime(
-                    '%Y-%m-%d %H:%M:%S')
-        })
+        n += 1
+
+        nodes = []
+        edge_matrix = [[False] * n for _ in range(n)]
+
+        directory_node = makeFileNode(path)
         nodes.append(directory_node)
-        def func(filepath, parent_index):
 
-            for x in os.listdir(filepath):
+        def func(parent_node, parent_path):
+            children = os.listdir(parent_path)
 
-                curr_path = os.path.join(filepath, x)
-                attributes = {}
-                attributes["Size (bytes)"] = os.path.getsize(curr_path)
-                attributes["Last modified"] = datetime.fromtimestamp(os.path.getmtime(curr_path)).strftime(
-                    '%Y-%m-%d %H:%M:%S')
-                attributes["Date created"] = datetime.fromtimestamp(os.path.getctime(curr_path)).strftime(
-                    '%Y-%m-%d %H:%M:%S')
-                node = Node(nodeName=x, attributes=attributes)
-                nodes.append(node)
-                matrix_row = []
-                matrix_row = [False]*n
-                length = len(list(os.listdir(filepath)))
-                if os.path.isfile(curr_path):
-                    matrix_row[parent_index] = True
-                    attributes["Type"] = "File"
-                    # lista.append((x, os.path.getsize(curr_path), filepath.split("\\")[-1]))
-                if os.path.isdir(curr_path):
-                    attributes["Type"] = "Directory"
-                    matrix_row[parent_index] = True
+            for child in children:
+                child_path = os.path.join(parent_path, child)
+                child_node = makeFileNode(child_path)
+                nodes.append(child_node)
+                parent_index = nodes.index(parent_node)
+                child_index = nodes.index(child_node)
+                edge_matrix[parent_index][child_index] = True
+                edge_matrix[child_index][parent_index] = True
+                if os.path.isdir(child_path):
+                    func(child_node, child_path)
 
-                    # matrix_row[parent_index:parent_index + length] = [True] * length
-                    func(curr_path, parent_index + length)
-
-                edge_matrix.append(matrix_row[:])
-        func(path,0)
-
-
-        matrix_data = []
-        for row in edge_matrix:
-            matrix_data.append([int(value) for value in row])
-
-        with open('incidence_matrix.txt', 'w') as file:
-            for row in matrix_data:
-                file.write(' '.join(str(value) for value in row) + '\n')
+        func(directory_node,path)
 
         graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
         graf.name = file.name
         return graf
+def makeFileNode(path):
+    attributes={
+        "Size (bytes)": os.path.getsize(path),
+        "Last modified": datetime.fromtimestamp(os.path.getmtime(path)).strftime(
+            '%Y-%m-%d %H:%M:%S'),
+        "Date created": datetime.fromtimestamp(os.path.getctime(path)).strftime(
+            '%Y-%m-%d %H:%M:%S')
+    }
+    if(os.path.isdir(path)):
+        attributes["Type"]="Directory"
+    else:
+        attributes["Type"]="File"
 
+    node = Node(nodeName=path.split("\\")[-1], attributes=attributes)
+    return node
