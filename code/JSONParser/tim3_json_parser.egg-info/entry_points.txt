@@ -1,0 +1,3 @@
+[parsiranje]
+json_parse = JSONParser.kod.parse:JSONParser
+

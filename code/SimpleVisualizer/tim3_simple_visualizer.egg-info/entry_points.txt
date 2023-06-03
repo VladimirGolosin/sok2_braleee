@@ -1,0 +1,3 @@
+[vizualizacija]
+simple = SimpleVisualizer.simplevisualizer:SimpleVisualizer
+
