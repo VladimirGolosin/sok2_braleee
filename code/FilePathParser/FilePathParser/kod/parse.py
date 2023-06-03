@@ -21,9 +21,17 @@ class FilePathParser(ParserService):
         for _, dirs, files in os.walk(path):
             n += len(dirs)
             n += len(files)
-        def func(filepath, index):
+        n+=1
+        directory_node = Node(name=path, attributes={
+            "Type": "Directory",
+            "Size (bytes)": os.path.getsize(path)
+        })
+        nodes.append(directory_node)
+        def func(filepath, parent_index):
+
             for x in os.listdir(filepath):
-                curr_path = filepath + "\\" + x
+
+                curr_path = os.path.join(filepath, x)
                 attributes = {}
                 attributes["Size (bytes)"] = os.path.getsize(curr_path)
                 attributes["Last modified"] = datetime.fromtimestamp(os.path.getmtime(curr_path)).strftime(
@@ -36,16 +44,27 @@ class FilePathParser(ParserService):
                 matrix_row = [False]*n
                 length = len(list(os.listdir(filepath)))
                 if os.path.isfile(curr_path):
-                    matrix_row[index] = True
+                    matrix_row[parent_index] = True
                     attributes["Type"] = "File"
                     # lista.append((x, os.path.getsize(curr_path), filepath.split("\\")[-1]))
                 if os.path.isdir(curr_path):
                     attributes["Type"] = "Directory"
-                    matrix_row[index:index + length] = [True] * length
-                    func(curr_path,index+length)
+                    matrix_row[parent_index] = True
+
+                    # matrix_row[parent_index:parent_index + length] = [True] * length
+                    func(curr_path, parent_index + length)
 
                 edge_matrix.append(matrix_row[:])
         func(path,0)
+
+
+        matrix_data = []
+        for row in edge_matrix:
+            matrix_data.append([int(value) for value in row])
+
+        with open('incidence_matrix.txt', 'w') as file:
+            for row in matrix_data:
+                file.write(' '.join(str(value) for value in row) + '\n')
 
         graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
         graf.name = file.name
