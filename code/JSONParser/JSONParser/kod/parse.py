@@ -1,5 +1,6 @@
 from core.model.models import Node, Graph
 from core.services.parser import ParserService
+import os
 import json
 class JSONParser(ParserService):
 
