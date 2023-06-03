@@ -22,9 +22,13 @@ class FilePathParser(ParserService):
             n += len(dirs)
             n += len(files)
         n+=1
-        directory_node = Node(name=path, attributes={
+        directory_node = Node(nodeName=path, attributes={
             "Type": "Directory",
-            "Size (bytes)": os.path.getsize(path)
+            "Size (bytes)": os.path.getsize(path),
+            "Last modified" : datetime.fromtimestamp(os.path.getmtime(curr_path)).strftime(
+            '%Y-%m-%d %H:%M:%S'),
+            "Date created" : datetime.fromtimestamp(os.path.getctime(curr_path)).strftime(
+                    '%Y-%m-%d %H:%M:%S')
         })
         nodes.append(directory_node)
         def func(filepath, parent_index):
