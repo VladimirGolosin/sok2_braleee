@@ -17,11 +17,11 @@ class FilePathParser(ParserService):
 
         nodes = []
         edge_matrix = []
-        def func(filepath):
-            n=0
-            for _, dirs, files in os.walk(path):
-                n += len(dirs)
-                n += len(files)
+        n = 0
+        for _, dirs, files in os.walk(path):
+            n += len(dirs)
+            n += len(files)
+        def func(filepath, index):
             for x in os.listdir(filepath):
                 curr_path = filepath + "\\" + x
                 attributes = {}
@@ -30,15 +30,22 @@ class FilePathParser(ParserService):
                     '%Y-%m-%d %H:%M:%S')
                 attributes["Date created"] = datetime.fromtimestamp(os.path.getctime(curr_path)).strftime(
                     '%Y-%m-%d %H:%M:%S')
-                attributes["n"] = n
                 node = Node(nodeName=x, attributes=attributes)
                 nodes.append(node)
+                matrix_row = []
+                matrix_row = [False]*n
+                length = len(list(os.listdir(filepath)))
                 if os.path.isfile(curr_path):
-                    pass
+                    matrix_row[index] = True
+                    attributes["Type"] = "File"
                     # lista.append((x, os.path.getsize(curr_path), filepath.split("\\")[-1]))
                 if os.path.isdir(curr_path):
-                    func(curr_path)
-        func(path)
+                    attributes["Type"] = "Directory"
+                    matrix_row[index:index + length] = [True] * length
+                    func(curr_path,index+length)
+
+                edge_matrix.append(matrix_row[:])
+        func(path,0)
 
         graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
         graf.name = file.name
