@@ -16,52 +16,57 @@ class FilePathParser(ParserService):
         file.close()
 
         nodes = []
+        edge_matrix = []
         n = 0
         for _, dirs, files in os.walk(path):
             n += len(dirs)
             n += len(files)
         n+=1
-        edge_matrix = [[False] * n for _ in range(n)]
-        graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
-        graf.name = file.name
-        directory_node = Node(nodeName=path, attributes={
+        directory_node = Node(name=path, attributes={
             "Type": "Directory",
             "Size (bytes)": os.path.getsize(path)
         })
-        #nodes.append(directory_node)
-        populate_graph_from_directory(graf, path)
+        nodes.append(directory_node)
+        def func(filepath, parent_index):
 
+            for x in os.listdir(filepath):
+
+                curr_path = os.path.join(filepath, x)
+                attributes = {}
+                attributes["Size (bytes)"] = os.path.getsize(curr_path)
+                attributes["Last modified"] = datetime.fromtimestamp(os.path.getmtime(curr_path)).strftime(
+                    '%Y-%m-%d %H:%M:%S')
+                attributes["Date created"] = datetime.fromtimestamp(os.path.getctime(curr_path)).strftime(
+                    '%Y-%m-%d %H:%M:%S')
+                node = Node(nodeName=x, attributes=attributes)
+                nodes.append(node)
+                matrix_row = []
+                matrix_row = [False]*n
+                length = len(list(os.listdir(filepath)))
+                if os.path.isfile(curr_path):
+                    matrix_row[parent_index] = True
+                    attributes["Type"] = "File"
+                    # lista.append((x, os.path.getsize(curr_path), filepath.split("\\")[-1]))
+                if os.path.isdir(curr_path):
+                    attributes["Type"] = "Directory"
+                    matrix_row[parent_index] = True
+
+                    # matrix_row[parent_index:parent_index + length] = [True] * length
+                    func(curr_path, parent_index + length)
+
+                edge_matrix.append(matrix_row[:])
+        func(path,0)
+
+
+        matrix_data = []
+        for row in edge_matrix:
+            matrix_data.append([int(value) for value in row])
+
+        with open('incidence_matrix.txt', 'w') as file:
+            for row in matrix_data:
+                file.write(' '.join(str(value) for value in row) + '\n')
+
+        graf = Graph(nodes=nodes, edge_matrix=edge_matrix)
+        graf.name = file.name
         return graf
-
-def populate_graph_from_directory(graph, directory):
-    # Create a node for the current directory
-    current_node = Node(nodeName=directory)
-    graph.nodes.append(current_node)
-
-    # Traverse the directory recursively
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            # Create a node for each file and add it to the graph
-            file_path = os.path.join(root, file)
-            file_node = Node(nodeName=file_path)
-            graph.nodes.append(file_node)
-
-            # Add an edge between the file node and the current directory node in the edge matrix
-            current_index = graph.nodes.index(current_node)
-            file_index = graph.nodes.index(file_node)
-            graph.edge_matrix[current_index][file_index] = True
-
-        for subdir in dirs:
-            # Recursively populate the graph for each subdirectory
-            subdir_path = os.path.join(root, subdir)
-            subdir_node = Node(nodeName=subdir_path)
-            graph.nodes.append(subdir_node)
-
-            # Add an edge between the subdirectory node and the current directory node in the edge matrix
-            current_index = graph.nodes.index(current_node)
-            subdir_index = graph.nodes.index(subdir_node)
-            graph.edge_matrix[current_index][subdir_index] = True
-
-            # Recursively populate the graph for the subdirectory
-            populate_graph_from_directory(graph, subdir_path)
 

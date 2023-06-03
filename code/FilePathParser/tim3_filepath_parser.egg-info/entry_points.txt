@@ -1,3 +1,0 @@
-[parsiranje]
-filepath_parse = FilePathParser.kod.parse:FilePathParser
-
