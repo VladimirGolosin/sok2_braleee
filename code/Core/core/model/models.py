@@ -1,3 +1,4 @@
+import json
 import uuid
 
 
@@ -6,7 +7,7 @@ class Node:
         self._id = str(uuid.uuid4())
         self._name = kwargs.get("nodeName", None)
         self._attributes = kwargs.get("attributes", None)
-
+        self._attributesJson = json.dumps(self._attributes)
     @property
     def id(self):
         return self._id
@@ -18,6 +19,10 @@ class Node:
     @property
     def attributes(self):
         return self._attributes
+
+    @property
+    def attributesJson(self):
+        return self._attributesJson
 
     @name.setter
     def name(self, value: str):

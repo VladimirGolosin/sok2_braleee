@@ -5,7 +5,8 @@
         {% for node in graph.nodes %}
             {
                 id: "{{ node.id }}",
-                name: "{{ node.name }}"
+                name: "{{ node.name }}",
+                attributesJson: JSON.parse('{{ node.attributesJson | safe }}')
             },
         {% endfor %}
     ];
@@ -73,25 +74,56 @@
         .attr("class", "node")
         .call(d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded))
         .each(function (d) {
-            // Save "this" as "that" for each node
             d.that = this;
         });
 
+    var rectPadding = 10; // Padding inside the rectangle
+
     node
-        .append("rectangle")
-        .attr("r", d => Math.max(20, d.name.length * 3)) // Adjust the size of the circle based on text length
-        .style("fill", "#090"); // Set the circle fill color
+        .append("rect") // Append a rectangle instead of a circle
+        .attr("class", "node-rect") // Add a class for styling
+        .style("fill", "#090"); // Set the rectangle fill color
 
     node
         .append("text")
         .attr("class", "label")
         .attr("text-anchor", "middle")
-        .attr("dy", "0.35em")
         .attr("fill", "black")
-        .attr("font-size", "12px") // Set the font size of the text
-        .text(d => d.name);
+        .attr("font-size", "12px")
+        .text(d => d.name)
+        .each(function () {
+            var bbox = this.getBBox();
+            d3.select(this.parentNode)
+                .select("rect.node-rect")
+                .attr("width", bbox.width + rectPadding * 2)
+                .attr("height", bbox.height + rectPadding * 2);
+        });
+
+    node
+        .append("text")
+        .attr("class", "attributes")
+        .attr("text-anchor", "start")
+        .attr("fill", "black")
+        .attr("font-size", "10px")
+        .selectAll("tspan")
+        .data(d => Object.entries(d.attributesJson))
+        .enter()
+        .append("tspan")
+        .attr("x", rectPadding) // Set the x position of each attribute
+        .attr("dy", "1.2em") // Set the vertical spacing between attributes
+        .text(d => `${d[0]}: ${d[1]}`)
+        .each(function () {
+            var bbox = this.getBBox();
+            var rect = d3.select(this.parentNode).select("rect.node-rect");
+            rect.attr("height", parseFloat(rect.attr("height")) + bbox.height + rectPadding);
+            var maxWidth = parseFloat(rect.attr("width")) - rectPadding * 2;
+            if (bbox.width > maxWidth) {
+                rect.attr("width", bbox.width + rectPadding * 2);
+            }
+        });
 
     node.on("click", handleNodeClick); // Add this line
+
 
     function handleNodeClick(event, d) {
         // Reset node colors to blue
