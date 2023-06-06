@@ -1,0 +1,151 @@
+<div id="visualization"></div>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script>
+    var nodes = [
+        {% for node in graph.nodes %}
+            {
+                id: "{{ node.id }}",
+                name: "{{ node.name }}"
+            },
+        {% endfor %}
+    ];
+
+    var edgeMatrix = [
+        {% for row in graph.edge_matrix %}
+            [{% for value in row %}{% if value %}true{% else %}false{% endif %}, {% endfor %}],
+        {% endfor %}
+    ];
+
+    var links = [];
+    for (var i = 0; i < edgeMatrix.length; i++) {
+        for (var j = i + 1; j < edgeMatrix[i].length; j++) { // Iterate only over upper triangle
+            if (edgeMatrix[i][j]) {
+                var sourceNode = nodes[i];
+                var targetNode = nodes[j];
+                links.push({
+                    source: sourceNode.id,
+                    target: targetNode.id
+                });
+            }
+        }
+    }
+
+    var width = document.getElementById("main-div").clientWidth;
+    var height = document.getElementById("main-div").clientHeight;
+
+    var svg = d3
+        .select("#visualization")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .call(d3.zoom().on("zoom", zoomed))
+        .append("g");
+
+    var simulation = d3
+        .forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id))
+        .force("charge", d3.forceManyBody().strength(-200))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collide", d3.forceCollide().radius(d => Math.max(20, d.name.length * 3 + 5))) // Adjust the collide force radius based on text length
+        .on("tick", () => {
+            link.attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+    var link = svg
+        .selectAll(".link")
+        .data(links)
+        .enter()
+        .insert("line", ".node") // Insert before the ".node" elements
+        .attr("class", "link")
+        .style("stroke", "#888") // Set the stroke color to gray
+        .style("stroke-width", 2); // Set the stroke width
+
+    var node = svg
+        .selectAll(".node")
+        .data(nodes)
+        .enter()
+        .append("g")
+        .attr("class", "node")
+        .call(d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded))
+        .each(function (d) {
+            // Save "this" as "that" for each node
+            d.that = this;
+        });
+
+    node
+        .append("rectangle")
+        .attr("r", d => Math.max(20, d.name.length * 3)) // Adjust the size of the circle based on text length
+        .style("fill", "#090"); // Set the circle fill color
+
+    node
+        .append("text")
+        .attr("class", "label")
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .attr("fill", "black")
+        .attr("font-size", "12px") // Set the font size of the text
+        .text(d => d.name);
+
+    node.on("click", handleNodeClick); // Add this line
+
+    function handleNodeClick(event, d) {
+        // Reset node colors to blue
+        node.selectAll("circle").style("fill", "#090");
+
+        // Get the node details via AJAX request
+        var url = "/get_data/" + d.id;
+
+        d3.json(url).then(function (response) {
+            // Extract the message from the response
+            var message = response.message;
+
+            // Replace the content of the node-details paragraph
+            var nodeDetails = d3.select(".details .node-details");
+            nodeDetails.html(message);
+        });
+
+        // Color the clicked node red
+        d3.select(d.that).select("circle").style("fill", "red");
+
+        // Call the copyGraphToBirdView function
+        copyGraphToBirdView();
+    }
+
+
+    function zoomed(event) {
+        svg.attr("transform", event.transform);
+    }
+
+    function dragStarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragEnded(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+</script>
+<style>
+    .label,
+    .node circle {
+        cursor: grab;
+    }
+
+    .label:hover,
+    .node circle:hover {
+        cursor: grabbing;
+    }
+</style>

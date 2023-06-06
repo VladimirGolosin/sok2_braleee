@@ -30,4 +30,5 @@ lay_egs JSONParser
 lay_egs FilePathParser
 lay_egs VlafaParser
 lay_egs SimpleVisualizer
+lay_egs ComplexVisualizer
 run_server django_project

@@ -19,6 +19,7 @@ remove_eggs JSONParser
 remove_eggs FilePathParser
 remove_eggs VlafaParser
 remove_eggs SimpleVisualizer
+remove_eggs ComplexVisualizer
 
 # remove db
 #cd django_project

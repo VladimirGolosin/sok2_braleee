@@ -21,6 +21,7 @@ def parse_and_visualize(request):
     ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
     trenutni_iscrtan_graf = apps.get_app_config('core').trenutni_iscrtan_graf
 
+    print(viz)
     if request.method == 'POST':
         selected_parser = request.POST.get('parser')
         selected_visualizer = request.POST.get('visualization')
