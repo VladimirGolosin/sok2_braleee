@@ -44,7 +44,7 @@
 
     var simulation = d3
         .forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id))
+        .force("link", d3.forceLink(links).id(d => d.id).distance(120))
         .force("charge", d3.forceManyBody().strength(-200))
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collide", d3.forceCollide().radius(d => Math.max(20, d.name.length * 3 + 5))) // Adjust the collide force radius based on text length
@@ -82,52 +82,101 @@
     node
         .append("rect") // Append a rectangle instead of a circle
         .attr("class", "node-rect") // Add a class for styling
-        .style("fill", "#090"); // Set the rectangle fill color
+        .style("fill", "#090") // Set the rectangle fill color
+        .each(function (d) {
+            var duzina = 100;
+            var brKategorija = Object.keys(d.attributesJson).length;
+
+            var textSize = 10;
+            var visina = (brKategorija == 0) ? textSize : brKategorija * textSize;
+            visina += textSize;
+
+            var parentNode = d3.select(this.parentNode);
+            var rectNode = parentNode.select("rect.node-rect");
+
+            // Perform operations using "node"
+            rectNode.attr("width", duzina)
+                .attr("height", visina + textSize ).attr('x', -duzina / 2).attr('y', -visina / 2);
+        })
 
     node
         .append("text")
-        .attr("class", "label")
         .attr("text-anchor", "middle")
+        .attr("class", "label")
         .attr("fill", "black")
-        .attr("font-size", "12px")
-        .text(d => d.name)
-        .each(function () {
-            var bbox = this.getBBox();
-            d3.select(this.parentNode)
-                .select("rect.node-rect")
-                .attr("width", bbox.width + rectPadding * 2)
-                .attr("height", bbox.height + rectPadding * 2);
+        .each(function (d) {
+            var duzina = 100;
+            var brKategorija = Object.keys(d.attributesJson).length;
+
+            var textSize = 10;
+            var visina = (brKategorija == 0) ? textSize : brKategorija * textSize;
+            visina += textSize;
+
+            var parentNode = d3.select(this.parentNode);
+            var labelNode = parentNode.select("text.label");
+
+            labelNode.attr('x', 0).attr('y', -visina / 2 + textSize).attr('font-size', textSize).text(d => d.name)
         });
 
     node
+        .append('line')
+        .attr('class', 'separator')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 2)
+        .each(function (d) {
+            var duzina = 100;
+            var brKategorija = Object.keys(d.attributesJson).length;
+
+            var textSize = 10;
+            var visina = (brKategorija == 0) ? textSize : brKategorija * textSize;
+            visina += textSize;
+
+            var parentNode = d3.select(this.parentNode);
+            var separatorNode = parentNode.select("line.separator");
+
+            separatorNode.attr('x1', -duzina / 2).attr('y1', -visina / 2 + textSize + 4).attr('x2', duzina / 2).attr('y2', -visina / 2 + textSize + 4)
+
+        })
+
+
+    node
         .append("text")
+        .attr("text-anchor", "middle")
         .attr("class", "attributes")
-        .attr("text-anchor", "start")
         .attr("fill", "black")
-        .attr("font-size", "10px")
-        .selectAll("tspan")
-        .data(d => Object.entries(d.attributesJson))
-        .enter()
-        .append("tspan")
-        .attr("x", rectPadding) // Set the x position of each attribute
-        .attr("dy", "1.2em") // Set the vertical spacing between attributes
-        .text(d => `${d[0]}: ${d[1]}`)
-        .each(function () {
-            var bbox = this.getBBox();
-            var rect = d3.select(this.parentNode).select("rect.node-rect");
-            rect.attr("height", parseFloat(rect.attr("height")) + bbox.height + rectPadding);
-            var maxWidth = parseFloat(rect.attr("width")) - rectPadding * 2;
-            if (bbox.width > maxWidth) {
-                rect.attr("width", bbox.width + rectPadding * 2);
-            }
+        .each(function (d) {
+            var duzina = 100;
+            var brKategorija = Object.keys(d.attributesJson).length;
+
+            var textSize = 10;
+            var visina = (brKategorija == 0) ? textSize : brKategorija * textSize;
+            visina += textSize;
+
+            const entries = Object.entries(d.attributesJson)
+
+            var parentNode = d3.select(this.parentNode)
+            var attributeNode = parentNode.select('text.attributes')
+
+            entries.forEach(function ([key, value], index) {
+                attributeNode
+                    .append("tspan")
+                    .attr("x", -duzina / 2 + 5)
+                    .attr("y", -visina / 2 + textSize * 2.5 + index * textSize)
+                    .attr("text-anchor", "start")
+                    .attr("font-size", textSize)
+                    .attr("font-family", "sans-serif")
+                    .attr("fill", "black")
+                    .text(key + ": " + value);
+            });
         });
+
 
     node.on("click", handleNodeClick); // Add this line
 
 
     function handleNodeClick(event, d) {
         // Reset node colors to blue
-        node.selectAll("circle").style("fill", "#090");
+        node.selectAll("rect").style("fill", "#090");
 
         // Get the node details via AJAX request
         var url = "/get_data/" + d.id;
@@ -142,7 +191,7 @@
         });
 
         // Color the clicked node red
-        d3.select(d.that).select("circle").style("fill", "red");
+        d3.select(d.that).select("rect").style("fill", "red");
 
         // Call the copyGraphToBirdView function
         copyGraphToBirdView();
