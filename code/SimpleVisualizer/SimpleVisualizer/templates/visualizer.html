@@ -18,7 +18,7 @@
 
     var links = [];
     for (var i = 0; i < edgeMatrix.length; i++) {
-        for (var j = i + 1; j < edgeMatrix[i].length; j++) { // Iterate only over upper triangle
+        for (var j = i + 1; j < edgeMatrix[i].length; j++) {
             if (edgeMatrix[i][j]) {
                 var sourceNode = nodes[i];
                 var targetNode = nodes[j];
@@ -46,7 +46,7 @@
         .force("link", d3.forceLink(links).id(d => d.id))
         .force("charge", d3.forceManyBody().strength(-200))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide().radius(d => Math.max(20, d.name.length * 3 + 5))) // Adjust the collide force radius based on text length
+        .force("collide", d3.forceCollide().radius(d => Math.max(20, d.name.length * 3 + 5)))
         .on("tick", () => {
             link.attr("x1", d => d.source.x)
                 .attr("y1", d => d.source.y)
@@ -60,10 +60,10 @@
         .selectAll(".link")
         .data(links)
         .enter()
-        .insert("line", ".node") // Insert before the ".node" elements
+        .insert("line", ".node")
         .attr("class", "link")
-        .style("stroke", "#888") // Set the stroke color to gray
-        .style("stroke-width", 2); // Set the stroke width
+        .style("stroke", "#888")
+        .style("stroke-width", 2);
 
     var node = svg
         .selectAll(".node")
@@ -73,14 +73,13 @@
         .attr("class", "node")
         .call(d3.drag().on("start", dragStarted).on("drag", dragged).on("end", dragEnded))
         .each(function (d) {
-            // Save "this" as "that" for each node
             d.that = this;
         });
 
     node
         .append("circle")
-        .attr("r", d => Math.max(20, d.name.length * 3)) // Adjust the size of the circle based on text length
-        .style("fill", "#5DADE2"); // Set the circle fill color
+        .attr("r", d => Math.max(20, d.name.length * 3))
+        .style("fill", "#5DADE2");
 
     node
         .append("text")
@@ -88,31 +87,25 @@
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
         .attr("fill", "black")
-        .attr("font-size", "12px") // Set the font size of the text
+        .attr("font-size", "12px")
         .text(d => d.name);
 
-    node.on("click", handleNodeClick); // Add this line
+    node.on("click", handleNodeClick);
 
     function handleNodeClick(event, d) {
-        // Reset node colors to blue
         node.selectAll("circle").style("fill", "#5DADE2");
 
-        // Get the node details via AJAX request
         var url = "/get_data/" + d.id;
 
         d3.json(url).then(function (response) {
-            // Extract the message from the response
             var message = response.message;
 
-            // Replace the content of the node-details paragraph
             var nodeDetails = d3.select(".details .node-details");
             nodeDetails.html(message);
         });
 
-        // Color the clicked node red
         d3.select(d.that).select("circle").style("fill", "red");
 
-        // Call the copyGraphToBirdView function
         copyGraphToBirdView();
     }
 
