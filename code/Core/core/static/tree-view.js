@@ -1,14 +1,13 @@
 // originalni kod:  https://observablehq.com/@d3/collapsible-tree
-// skripta za generisanje tree view
 
 const treeDiagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
 
-const rootNode = nodes[0]; // Get the first node from the nodes list
+const rootNode = nodes[0];
 const treeData = {id: rootNode.id, name: rootNode.name, children: generateTree(0)};
 
 function generateTree(nodeId, visited = []) {
     const children = [];
-    visited.push(nodeId); // Mark the current node as visited
+    visited.push(nodeId);
 
     for (let i = 0; i < nodes.length; i++) {
         if (edgeMatrix[nodeId][i] && !visited.includes(i)) {
@@ -17,7 +16,7 @@ function generateTree(nodeId, visited = []) {
         }
     }
 
-    return children.length ? children : null; // Return null if there are no children
+    return children.length ? children : null;
 }
 
 const treeMargin = {top: 10, right: 120, bottom: 10, left: 40};
@@ -27,12 +26,12 @@ const treeDy = treeWidth / 6;
 
 const treeLayout = d3.tree().nodeSize([treeDx, treeDy]);
 
-const treeRoot = d3.hierarchy(treeData, d => d.children); // Specify children accessor
+const treeRoot = d3.hierarchy(treeData, d => d.children);
 
 treeRoot.x0 = treeDy / 2;
 treeRoot.y0 = 0;
 treeRoot.descendants().forEach((d, i) => {
-    d.index = i; // Assign an index to each node
+    d.index = i;
     d._children = d.children;
     if (d.data.name !== "aaaa") {
         d.children = null;
@@ -59,7 +58,6 @@ function treeUpdate(source) {
     const nodes = treeRoot.descendants().reverse();
     const links = treeRoot.links();
 
-    // Compute the new tree layout.
     treeLayout(treeRoot);
 
     let left = treeRoot;
@@ -76,34 +74,27 @@ function treeUpdate(source) {
         .attr("viewBox", [-treeMargin.left, left.x - treeMargin.top, treeWidth, height])
         .tween("resize", window.ResizeObserver ? null : () => () => treeSvg.dispatch("toggle"));
 
-    // Update the nodes...
     const node = treeGNode.selectAll("g")
         .data(nodes, d => d.index);
 
-    // Enter any new nodes at the parent's previous position.
     const nodeEnter = node.enter().append("g").attr("class", "tree-node")
         .attr("transform", d => `translate(${source.y0},${source.x0})`)
         .attr("fill-opacity", 0)
         .attr("stroke-opacity", 0)
         .on("click", (event, d) => {
-            // Print the ID of the clicked node to the console
             console.log("Clicked node ID:", d.data.id);
 
-            // Remove the red color from all nodes
             d3.selectAll(".tree-node").attr("fill", d => d._children ? "#555" : "#999");
 
-            // Apply the red color to the clicked node
             d3.select(event.currentTarget).attr("fill", "red");
 
             d.children = d.children ? null : d._children;
             treeUpdate(d);
 
-            // Find the corresponding node in the main-visual
             const targetNodeId = d.data.id;
             const targetNode = d3.selectAll("#visualization .node")
                 .filter(node => node.id === targetNodeId);
 
-            // Trigger the click event of the corresponding node in the main-visual
             const clickHandler = targetNode.on("click");
             if (clickHandler) {
                 clickHandler(targetNode.node(), targetNode.datum());
@@ -126,41 +117,34 @@ function treeUpdate(source) {
         .attr("stroke-width", 3)
         .attr("stroke", "white");
 
-    // Transition nodes to their new position.
     const nodeUpdate = node.merge(nodeEnter).transition(transition)
         .attr("transform", d => `translate(${d.y},${d.x})`)
         .attr("fill-opacity", 1)
         .attr("stroke-opacity", 1);
 
-    // Transition exiting nodes to the parent's new position.
     const nodeExit = node.exit().transition(transition).remove()
         .attr("transform", d => `translate(${source.y},${source.x})`)
         .attr("fill-opacity", 0)
         .attr("stroke-opacity", 0);
 
-    // Update the links...
     const link = treeGLink.selectAll("path")
         .data(links, d => d.target.index);
 
-    // Enter any new links at the parent's previous position.
     const linkEnter = link.enter().append("path")
         .attr("d", d => {
             const o = {x: source.x0, y: source.y0};
             return treeDiagonal({source: o, target: o});
         });
 
-    // Transition links to their new position.
     link.merge(linkEnter).transition(transition)
         .attr("d", treeDiagonal);
 
-    // Transition exiting nodes to the parent's new position.
     link.exit().transition(transition).remove()
         .attr("d", d => {
             const o = {x: source.x, y: source.y};
             return treeDiagonal({source: o, target: o});
         });
 
-    // Stash the old positions for transition.
     treeRoot.eachBefore(d => {
         d.x0 = d.x;
         d.y0 = d.y;

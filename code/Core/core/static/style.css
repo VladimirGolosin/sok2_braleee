@@ -154,5 +154,5 @@ select, input, button {
 .details {
     flex: 1;
     height: 100%;
-    overflow: auto; /* Add this line to enable scrolling */
+    overflow: auto; 
 }

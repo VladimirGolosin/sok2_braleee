@@ -21,7 +21,6 @@ def parse_and_visualize(request):
     ucitani_grafovi = apps.get_app_config('core').ucitani_grafovi
     trenutni_iscrtan_graf = apps.get_app_config('core').trenutni_iscrtan_graf
 
-    print(viz)
     if request.method == 'POST':
         selected_parser = request.POST.get('parser')
         selected_visualizer = request.POST.get('visualization')
@@ -57,15 +56,11 @@ def parse_and_visualize(request):
 
         if visualizer is not None:
             trenutni_iscrtan_graf = visualizer.visualize(new_graph)
-            # obavestiti core pošto ovo nije lista
             apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
             apps.get_app_config('core').trenutni_graf = new_graph
 
         else:
             print("greska kod visualizacije!")
-
-    else:
-        print("pozvan je get")
 
     context = {
         "parsers": parseri,
@@ -101,7 +96,6 @@ def load_and_visualize(request):
 
         if visualizer and graph_to_display:
             trenutni_iscrtan_graf = visualizer.visualize(graph_to_display)
-            # obavestiti core pošto ovo nije lista
             apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
             apps.get_app_config('core').trenutni_graf = graph_to_display
 
@@ -109,8 +103,6 @@ def load_and_visualize(request):
         else:
             print("greska kod visualizacije!")
 
-    else:
-        print("pozvan je get")
 
     context = {
         "parsers": parseri,
@@ -126,7 +118,7 @@ def get_data(request, node_id):
 
     for n in apps.get_app_config('core').trenutni_graf.nodes:
         if n.id == node_id:
-            text = n.getNodeDetails()  # Corrected method name
+            text = n.getNodeDetails()
 
     data = {
         'message': text,
@@ -172,7 +164,6 @@ def search(request, search_text):
     viz = apps.get_app_config('core').trenutni_vizualizator
     pretrazen_graf = search_graph(apps.get_app_config('core').trenutni_graf, search_text)
     trenutni_iscrtan_graf = viz.visualize(pretrazen_graf)
-    # obavestiti core pošto ovo nije lista
     apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
     apps.get_app_config('core').trenutni_graf = pretrazen_graf
 
@@ -200,17 +191,14 @@ def filter_graph(graph, filter_text):
             break
 
     if len(filter_parts) != 2:
-        return graph  # Return the original graph if filter text is invalid
+        return graph
 
-    print(possible_operators,operator,filter_parts)
     attribute_name = filter_parts[0].strip()
     filter_value = filter_parts[1].strip()
 
     for index, node in enumerate(graph.nodes):
         if attribute_name in node.attributes:
             attribute_value = node.attributes[attribute_name]
-            print("looooooooooool", type(attribute_value), type(filter_value))
-            print("ajajajaja", attribute_value, filter_value)
             if compare_values(attribute_value, operator, filter_value):
                 new_graph.nodes.append(node)
                 node_mapping[index] = len(new_graph.nodes) - 1
@@ -233,7 +221,6 @@ from datetime import datetime
 
 def compare_values(value, operator, filter_value):
 
-    # Handle boolean comparisons
     if isinstance(value, bool):
         filter_value = filter_value.lower()
         if filter_value == "true":
@@ -243,16 +230,12 @@ def compare_values(value, operator, filter_value):
         else:
             return False
 
-    # Handle date comparisons
     if isinstance(value, datetime):
         try:
-            print("GENERACIOO", filter_value)
             filter_value = datetime.strptime(filter_value, '%Y-%m-%d %H:%M:%S.%f')
-            print("ACOOO",filter_value)
         except ValueError:
             return False
 
-    # Convert filter_value to the appropriate type based on the type of value
     try:
         if isinstance(value, int):
             filter_value = int(filter_value)
@@ -263,7 +246,6 @@ def compare_values(value, operator, filter_value):
     except ValueError:
         return False
 
-    # Perform the comparison based on the operator and the type of value
     if operator == '==':
         return value == filter_value
     elif operator == '>':
@@ -284,7 +266,6 @@ def filter(request, filter_text):
     viz = apps.get_app_config('core').trenutni_vizualizator
     filtriran_graf = filter_graph(apps.get_app_config('core').trenutni_graf, filter_text)
     trenutni_iscrtan_graf = viz.visualize(filtriran_graf)
-    # obavestiti core pošto ovo nije lista
     apps.get_app_config('core').trenutni_iscrtan_graf = trenutni_iscrtan_graf
     apps.get_app_config('core').trenutni_graf = filtriran_graf
 
