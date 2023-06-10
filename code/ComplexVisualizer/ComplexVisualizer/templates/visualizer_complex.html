@@ -19,7 +19,7 @@
 
     var links = [];
     for (var i = 0; i < edgeMatrix.length; i++) {
-        for (var j = i + 1; j < edgeMatrix[i].length; j++) { // Iterate only over upper triangle
+        for (var j = i + 1; j < edgeMatrix[i].length; j++) {
             if (edgeMatrix[i][j]) {
                 var sourceNode = nodes[i];
                 var targetNode = nodes[j];
@@ -47,7 +47,7 @@
         .force("link", d3.forceLink(links).id(d => d.id).distance(120))
         .force("charge", d3.forceManyBody().strength(-200))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide().radius(d => Math.max(20, d.name.length * 3 + 5))) // Adjust the collide force radius based on text length
+        .force("collide", d3.forceCollide().radius(d => Math.max(20, d.name.length * 3 + 5)))
         .on("tick", () => {
             link.attr("x1", d => d.source.x)
                 .attr("y1", d => d.source.y)
@@ -61,10 +61,10 @@
         .selectAll(".link")
         .data(links)
         .enter()
-        .insert("line", ".node") // Insert before the ".node" elements
+        .insert("line", ".node")
         .attr("class", "link")
-        .style("stroke", "#888") // Set the stroke color to gray
-        .style("stroke-width", 2); // Set the stroke width
+        .style("stroke", "#888")
+        .style("stroke-width", 2);
 
     var node = svg
         .selectAll(".node")
@@ -77,12 +77,12 @@
             d.that = this;
         });
 
-    var rectPadding = 10; // Padding inside the rectangle
+    var rectPadding = 10;
 
     node
-        .append("rect") // Append a rectangle instead of a circle
-        .attr("class", "node-rect") // Add a class for styling
-        .style("fill", "#090") // Set the rectangle fill color
+        .append("rect")
+        .attr("class", "node-rect")
+        .style("fill", "#68fca3")
         .each(function (d) {
             var duzina = 100;
             var brKategorija = Object.keys(d.attributesJson).length;
@@ -94,9 +94,8 @@
             var parentNode = d3.select(this.parentNode);
             var rectNode = parentNode.select("rect.node-rect");
 
-            // Perform operations using "node"
             rectNode.attr("width", duzina)
-                .attr("height", visina + textSize ).attr('x', -duzina / 2).attr('y', -visina / 2);
+                .attr("height", visina + textSize).attr('x', -duzina / 2).attr('y', -visina / 2);
         })
 
     node
@@ -171,29 +170,23 @@
         });
 
 
-    node.on("click", handleNodeClick); // Add this line
+    node.on("click", handleNodeClick);
 
 
     function handleNodeClick(event, d) {
-        // Reset node colors to blue
-        node.selectAll("rect").style("fill", "#090");
+        node.selectAll("rect").style("fill", "#68fca3");
 
-        // Get the node details via AJAX request
         var url = "/get_data/" + d.id;
 
         d3.json(url).then(function (response) {
-            // Extract the message from the response
             var message = response.message;
 
-            // Replace the content of the node-details paragraph
             var nodeDetails = d3.select(".details .node-details");
             nodeDetails.html(message);
         });
 
-        // Color the clicked node red
         d3.select(d.that).select("rect").style("fill", "red");
 
-        // Call the copyGraphToBirdView function
         copyGraphToBirdView();
     }
 
@@ -221,12 +214,12 @@
 </script>
 <style>
     .label,
-    .node circle {
+    .node rect {
         cursor: grab;
     }
 
     .label:hover,
-    .node circle:hover {
+    .node rect:hover {
         cursor: grabbing;
     }
 </style>
