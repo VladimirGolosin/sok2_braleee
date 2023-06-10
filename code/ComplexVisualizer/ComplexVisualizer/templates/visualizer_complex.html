@@ -77,8 +77,6 @@
             d.that = this;
         });
 
-    var rectPadding = 10;
-
     node
         .append("rect")
         .attr("class", "node-rect")
@@ -94,7 +92,22 @@
             var parentNode = d3.select(this.parentNode);
             var rectNode = parentNode.select("rect.node-rect");
 
-            rectNode.attr("width", duzina)
+            var rectPadding = 10;
+            var brKarakteraNajduzi = -1;
+            for (let key in d.attributesJson) {
+
+                let rec = key + ": " + d.attributesJson[key]
+                if (brKarakteraNajduzi < rec.length) {
+                    brKarakteraNajduzi = rec.length
+                }
+                console.log(rec)
+                console.log(rec.length)
+                console.log(typeof (rec))
+            }
+            console.log("najduzi kuraccc " + brKarakteraNajduzi)
+
+
+            rectNode.attr("width", brKarakteraNajduzi * 5)
                 .attr("height", visina + textSize).attr('x', -duzina / 2).attr('y', -visina / 2);
         })
 
@@ -129,6 +142,22 @@
             var textSize = 10;
             var visina = (brKategorija == 0) ? textSize : brKategorija * textSize;
             visina += textSize;
+
+            var rectPadding = 10;
+            var brKarakteraNajduzi = -1;
+            for (let key in d.attributesJson) {
+
+                let rec = key + ": " + d.attributesJson[key]
+                if (brKarakteraNajduzi < rec.length) {
+                    brKarakteraNajduzi = rec.length
+                }
+                console.log(rec)
+                console.log(rec.length)
+                console.log(typeof (rec))
+            }
+            console.log("najduzi kuraccc " + brKarakteraNajduzi)
+
+            duzina = brKarakteraNajduzi*5
 
             var parentNode = d3.select(this.parentNode);
             var separatorNode = parentNode.select("line.separator");
