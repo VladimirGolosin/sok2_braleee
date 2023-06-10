@@ -1,13 +1,19 @@
 import json
 import uuid
+from datetime import datetime
 
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        return super().default(obj)
 
 class Node:
     def __init__(self, **kwargs):
         self._id = str(uuid.uuid4())
         self._name = kwargs.get("nodeName", None)
         self._attributes = kwargs.get("attributes", None)
-        self._attributesJson = json.dumps(self._attributes)
+        self._attributesJson = json.dumps(self._attributes, cls=DateTimeEncoder)
     @property
     def id(self):
         return self._id

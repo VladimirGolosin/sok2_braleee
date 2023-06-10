@@ -190,16 +190,27 @@ def filter_graph(graph, filter_text):
     new_graph = Graph(nodes=[], name=graph.name)
     node_mapping = {}
 
-    # Parse the filter_text into attribute_name, operator, and value
-    filter_parts = filter_text.split(' ')
-    if len(filter_parts) != 3:
+    operator = "xd"
+    filter_parts =[]
+    possible_operators = ["==",">=","<=",">","<","!="]
+    for op in possible_operators:
+        if op in filter_text:
+            filter_parts = filter_text.split(op)
+            operator = op
+            break
+
+    if len(filter_parts) != 2:
         return graph  # Return the original graph if filter text is invalid
 
-    attribute_name, operator, filter_value = filter_parts
+    print(possible_operators,operator,filter_parts)
+    attribute_name = filter_parts[0].strip()
+    filter_value = filter_parts[1].strip()
 
     for index, node in enumerate(graph.nodes):
         if attribute_name in node.attributes:
             attribute_value = node.attributes[attribute_name]
+            print("looooooooooool", type(attribute_value), type(filter_value))
+            print("ajajajaja", attribute_value, filter_value)
             if compare_values(attribute_value, operator, filter_value):
                 new_graph.nodes.append(node)
                 node_mapping[index] = len(new_graph.nodes) - 1
@@ -221,6 +232,7 @@ from datetime import datetime
 
 
 def compare_values(value, operator, filter_value):
+
     # Handle boolean comparisons
     if isinstance(value, bool):
         filter_value = filter_value.lower()
@@ -234,7 +246,9 @@ def compare_values(value, operator, filter_value):
     # Handle date comparisons
     if isinstance(value, datetime):
         try:
-            filter_value = datetime.strptime(filter_value, "%Y-%m-%d")
+            print("GENERACIOO", filter_value)
+            filter_value = datetime.strptime(filter_value, '%Y-%m-%d %H:%M:%S.%f')
+            print("ACOOO",filter_value)
         except ValueError:
             return False
 

@@ -49,10 +49,8 @@ class FilePathParser(ParserService):
 def makeFileNode(path):
     attributes={
         "Size (bytes)": os.path.getsize(path),
-        "Last modified": datetime.fromtimestamp(os.path.getmtime(path)).strftime(
-            '%Y-%m-%d %H:%M:%S'),
-        "Date created": datetime.fromtimestamp(os.path.getctime(path)).strftime(
-            '%Y-%m-%d %H:%M:%S')
+        "Last modified": datetime.fromtimestamp(os.path.getmtime(path)),
+        "Date created": datetime.fromtimestamp(os.path.getctime(path))
     }
     if(os.path.isdir(path)):
         attributes["Type"]="Directory"
