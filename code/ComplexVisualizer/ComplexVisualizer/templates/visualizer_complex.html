@@ -94,6 +94,26 @@
             var parentNode = d3.select(this.parentNode);
             var rectNode = parentNode.select("rect.node-rect");
 
+
+            var brKarakteraNajduzi = -1;
+            for (let key in d.attributesJson) {
+
+                let rec = key + ": " + d.attributesJson[key]
+                if (brKarakteraNajduzi < rec.length) {
+                    brKarakteraNajduzi = rec.length
+                }
+                console.log(rec)
+                console.log(rec.length)
+                console.log(typeof (rec))
+            }
+
+            duzina = brKarakteraNajduzi * 5
+            if (duzina % 2 !== 0) {
+                duzina++;
+            }
+            console.log(duzina)
+
+
             rectNode.attr("width", duzina)
                 .attr("height", visina + textSize).attr('x', -duzina / 2).attr('y', -visina / 2);
         })
@@ -114,6 +134,26 @@
             var parentNode = d3.select(this.parentNode);
             var labelNode = parentNode.select("text.label");
 
+
+            var brKarakteraNajduzi = -1;
+            for (let key in d.attributesJson) {
+
+                let rec = key + ": " + d.attributesJson[key]
+                if (brKarakteraNajduzi < rec.length) {
+                    brKarakteraNajduzi = rec.length
+                }
+                console.log(rec)
+                console.log(rec.length)
+                console.log(typeof (rec))
+            }
+
+
+            duzina = brKarakteraNajduzi * 5
+            if (duzina % 2 !== 0) {
+                duzina++;
+            }
+            console.log(duzina)
+
             labelNode.attr('x', 0).attr('y', -visina / 2 + textSize).attr('font-size', textSize).text(d => d.name)
         });
 
@@ -132,6 +172,25 @@
 
             var parentNode = d3.select(this.parentNode);
             var separatorNode = parentNode.select("line.separator");
+
+
+            var brKarakteraNajduzi = -1;
+            for (let key in d.attributesJson) {
+
+                let rec = key + ": " + d.attributesJson[key]
+                if (brKarakteraNajduzi < rec.length) {
+                    brKarakteraNajduzi = rec.length
+                }
+                console.log(rec)
+                console.log(rec.length)
+                console.log(typeof (rec))
+            }
+
+            duzina = brKarakteraNajduzi * 5
+            if (duzina % 2 !== 0) {
+                duzina++;
+            }
+            console.log(duzina)
 
             separatorNode.attr('x1', -duzina / 2).attr('y1', -visina / 2 + textSize + 4).attr('x2', duzina / 2).attr('y2', -visina / 2 + textSize + 4)
 
@@ -155,6 +214,26 @@
 
             var parentNode = d3.select(this.parentNode)
             var attributeNode = parentNode.select('text.attributes')
+
+
+            var brKarakteraNajduzi = -1;
+            for (let key in d.attributesJson) {
+
+                let rec = key + ": " + d.attributesJson[key]
+                if (brKarakteraNajduzi < rec.length) {
+                    brKarakteraNajduzi = rec.length
+                }
+                console.log(rec)
+                console.log(rec.length)
+                console.log(typeof (rec))
+            }
+
+            duzina = brKarakteraNajduzi * 5
+            if (duzina % 2 !== 0) {
+                duzina++;
+            }
+            console.log(duzina)
+
 
             entries.forEach(function ([key, value], index) {
                 attributeNode
